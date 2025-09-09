@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import API from "../utils/api";
 import { Link } from "react-router-dom";
 import HeroSection from "../components/HomeComponents/HeroSection.jsx";  
+import KeyFeatures from "../components/HomeComponents/KeyFeatures.jsx";
+import OurProducts from "../components/HomeComponents/OurProducts.jsx";
 
 const Home = () => {
   const [products, setProducts] = useState([]);
@@ -13,8 +15,9 @@ const Home = () => {
   return (
     <>
       <HeroSection />
+      <KeyFeatures/>
+      <OurProducts/>
     <div>
-
       <h1 className="text-2xl font-bold mb-6">Featured Products</h1>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {products.map((p) => (
