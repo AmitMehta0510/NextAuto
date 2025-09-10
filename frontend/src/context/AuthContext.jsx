@@ -28,6 +28,7 @@ export const AuthProvider = ({ children }) => {
 
   const handleLogin = async (credentials) => {
     const { data } = await login(credentials);
+    console.log(">>>", data);
     localStorage.setItem("token", data.token);
     setUser(data.user);
   };
