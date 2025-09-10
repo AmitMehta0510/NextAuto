@@ -74,18 +74,24 @@ import React, { useEffect, useState } from "react";
 import API from "../utils/api";
 
 const Profile = () => {
+  const token = localStorage.getItem("token");
   const [profile, setProfile] = useState(null);
+  
+  if(token){
+    useEffect(() => {
+      console.log("Token:", token);
+      API.get("/auth/profile").then((res) => setProfile(res.data));
+    }, []);
 
-  useEffect(() => {
-    API.get("/auth/profile").then((res) => setProfile(res.data));
-  }, []);
-
-  if (!profile) return <p>Loading...</p>;
+  }
+  
+  if (!profile) return <p>LogIn to see your profile</p>;
 
   return (
     <div>
       <h1 className="text-2xl font-bold mb-6">My Profile</h1>
       <div className="border p-4 rounded space-y-2">
+        hello profile
         <p><b>Name:</b> {profile.name}</p>
         <p><b>Email:</b> {profile.email}</p>
         <p><b>Role:</b> {profile.role}</p>
