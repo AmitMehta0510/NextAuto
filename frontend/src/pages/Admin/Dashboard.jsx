@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Card from "../../components/common/Card";
 import { Link } from "react-router-dom";
+import API from "../../utils/api";
+
 import {
   BarChart,
   Bar,
@@ -12,34 +14,51 @@ import {
   Line,
 } from "recharts";
 
-const salesData = [
-  { name: "Jan", sales: 400 },
-  { name: "Feb", sales: 600 },
-  { name: "Mar", sales: 800 },
-  { name: "Apr", sales: 700 },
-  { name: "May", sales: 1000 },
-];
-
 const Dashboard = () => {
+  const [stats, setStats] = useState(null);
+  const [salesData, setSalesData] = useState([]);
+
+  useEffect(() => {
+    // fetch stats
+    API.get("/admin/stats")
+      .then((res) => setStats(res.data))
+      .catch((err) => console.error(err));
+
+    // fetch sales report (monthly)
+    API.get("/admin/reports/sales")
+      .then((res) => setSalesData(res.data))
+      .catch((err) => console.error(err));
+  }, []);
+
+  if (!stats) return <p>Loading dashboard...</p>;
+
   return (
     <div className="p-6 space-y-6">
       {/* Top Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card>
-          <h3 className="text-lg font-semibold">Total Sales</h3>
-          <p className="text-2xl font-bold text-blue-600 mt-2">$25,000</p>
+          <h3 className="text-lg font-semibold">Total Revenue</h3>
+          <p className="text-2xl font-bold text-blue-600 mt-2">
+            ${stats.totalRevenue}
+          </p>
         </Card>
         <Card>
           <h3 className="text-lg font-semibold">Orders</h3>
-          <p className="text-2xl font-bold text-green-600 mt-2">320</p>
+          <p className="text-2xl font-bold text-green-600 mt-2">
+            {stats.totalOrders}
+          </p>
         </Card>
         <Card>
           <h3 className="text-lg font-semibold">Products</h3>
-          <p className="text-2xl font-bold text-purple-600 mt-2">150</p>
+          <p className="text-2xl font-bold text-purple-600 mt-2">
+            {stats.totalProducts}
+          </p>
         </Card>
         <Card>
           <h3 className="text-lg font-semibold">Users</h3>
-          <p className="text-2xl font-bold text-orange-600 mt-2">1200</p>
+          <p className="text-2xl font-bold text-orange-600 mt-2">
+            {stats.totalUsers}
+          </p>
         </Card>
       </div>
 
@@ -48,7 +67,7 @@ const Dashboard = () => {
         <Card title="Monthly Sales">
           <ResponsiveContainer width="100%" height={250}>
             <BarChart data={salesData}>
-              <XAxis dataKey="name" />
+              <XAxis dataKey="month" />
               <YAxis />
               <Tooltip />
               <Bar dataKey="sales" fill="#3b82f6" radius={[8, 8, 0, 0]} />
@@ -58,10 +77,15 @@ const Dashboard = () => {
         <Card title="Sales Trend">
           <ResponsiveContainer width="100%" height={250}>
             <LineChart data={salesData}>
-              <XAxis dataKey="name" />
+              <XAxis dataKey="month" />
               <YAxis />
               <Tooltip />
-              <Line type="monotone" dataKey="sales" stroke="#10b981" strokeWidth={3} />
+              <Line
+                type="monotone"
+                dataKey="sales"
+                stroke="#10b981"
+                strokeWidth={3}
+              />
             </LineChart>
           </ResponsiveContainer>
         </Card>

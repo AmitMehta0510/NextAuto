@@ -7,28 +7,28 @@ const ManageProducts = () => {
   const [form, setForm] = useState({ name: "", price: "", image: "" });
   const [editing, setEditing] = useState(null);
 
-  const fetchProducts = () => {
-    API.get("/admin/products").then((res) => setProducts(res.data));
-  };
+const fetchProducts = () => {
+  API.get("/api/admin/products").then((res) => setProducts(res.data));
+};
 
   useEffect(() => { fetchProducts(); }, []);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (editing) {
-      await API.put(`/admin/products/${editing}`, form);
-    } else {
-      await API.post("/admin/products", form);
-    }
-    setForm({ name: "", price: "", image: "" });
-    setEditing(null);
-    fetchProducts();
-  };
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (editing) {
+    await API.put(`/api/admin/products/${editing}`, form);
+  } else {
+    await API.post("/api/admin/products", form);
+  }
+  setForm({ name: "", price: "", image: "" });
+  setEditing(null);
+  fetchProducts();
+};
 
-  const handleDelete = async (id) => {
-    await API.delete(`/admin/products/${id}`);
-    fetchProducts();
-  };
+const handleDelete = async (id) => {
+  await API.delete(`/api/admin/products/${id}`);
+  fetchProducts();
+};
 
   return (
     <div>

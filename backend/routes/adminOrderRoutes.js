@@ -9,6 +9,7 @@ import { protect, adminOnly } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
+// Admin order management
 router.route("/")
   .get(protect, adminOnly, getOrders);
 
