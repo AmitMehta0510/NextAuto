@@ -1,67 +1,84 @@
 import Order from "../models/Order.js";
-import Cart from "../models/Cart.js";
-import Product from "../models/Product.js";
 
-export const placeOrder = async (req, res, next) => {
+// ====================== Customer ======================
+
+// POST /api/orders
+export const createOrder = async (req, res) => {
   try {
-    const { shippingAddress, paymentMethod } = req.body;
-    const cart = await Cart.findOne({ user: req.user._id }).populate("items.product");
-    if (!cart || cart.items.length === 0) return res.status(400).json({ message: "Cart empty" });
+    const { products, totalPrice, shippingAddress } = req.body;
 
-    const orderItems = cart.items.map(i => ({
-      product: i.product._id,
-      quantity: i.quantity,
-      priceAtPurchase: i.product.price
-    }));
-
-    const totalPrice = orderItems.reduce((s, i) => s + i.priceAtPurchase * i.quantity, 0);
-
-    const order = await Order.create({
-      user: req.user._id,
-      orderItems,
+    const order = new Order({
+      user: req.user._id, // from authMiddleware
+      products,
       totalPrice,
       shippingAddress,
-      paymentMethod: paymentMethod || "COD"
+      status: "Pending",
     });
 
-    // clear cart
-    cart.items = [];
-    await cart.save();
-
-    res.status(201).json(order);
-  } catch (err) {
-    next(err);
+    const savedOrder = await order.save();
+    res.status(201).json(savedOrder);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to create order" });
   }
 };
 
-export const getMyOrders = async (req, res, next) => {
+// GET /api/orders/my
+export const getMyOrders = async (req, res) => {
   try {
-    const orders = await Order.find({ user: req.user._id }).populate("orderItems.product");
+    const orders = await Order.find({ user: req.user._id }).populate("products");
     res.json(orders);
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch orders" });
   }
 };
 
-export const getAllOrders = async (req, res, next) => {
+// ====================== Admin ======================
+
+// GET /api/admin/orders
+export const getOrders = async (req, res) => {
   try {
-    const orders = await Order.find().populate("user", "name email").populate("orderItems.product");
+    const orders = await Order.find({})
+      .populate("user", "name email")
+      .populate("products");
     res.json(orders);
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch orders" });
   }
 };
 
-export const updateOrderStatus = async (req, res, next) => {
+// GET /api/admin/orders/:id
+export const getOrderById = async (req, res) => {
   try {
-    const order = await Order.findById(req.params.id);
+    const order = await Order.findById(req.params.id)
+      .populate("user", "name email")
+      .populate("products");
     if (!order) return res.status(404).json({ message: "Order not found" });
-
-    const { status } = req.body;
-    if (status) order.status = status;
-    await order.save();
     res.json(order);
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch order" });
+  }
+};
+
+// PUT /api/admin/orders/:id
+export const updateOrder = async (req, res) => {
+  try {
+    const order = await Order.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
+    if (!order) return res.status(404).json({ message: "Order not found" });
+    res.json(order);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to update order" });
+  }
+};
+
+// DELETE /api/admin/orders/:id
+export const deleteOrder = async (req, res) => {
+  try {
+    const order = await Order.findByIdAndDelete(req.params.id);
+    if (!order) return res.status(404).json({ message: "Order not found" });
+    res.json({ message: "Order deleted" });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to delete order" });
   }
 };

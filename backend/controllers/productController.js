@@ -1,53 +1,62 @@
 import Product from "../models/Product.js";
 
-export const createProduct = async (req, res, next) => {
-  try {
-    const payload = { ...req.body, createdBy: req.user._id };
-    const product = await Product.create(payload);
-    res.status(201).json(product);
-  } catch (err) {
-    next(err);
-  }
-};
+// ====================== Customer ======================
 
-export const getProducts = async (req, res, next) => {
+// GET /api/products
+export const getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find().sort({ createdAt: -1 });
+    const products = await Product.find({});
     res.json(products);
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch products" });
   }
 };
 
-export const getProductById = async (req, res, next) => {
+// GET /api/products/:id
+export const getProduct = async (req, res) => {
   try {
-    const p = await Product.findById(req.params.id);
-    if (!p) return res.status(404).json({ message: "Product not found" });
-    res.json(p);
-  } catch (err) {
-    next(err);
+    const product = await Product.findById(req.params.id);
+    if (!product) return res.status(404).json({ message: "Product not found" });
+    res.json(product);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch product" });
   }
 };
 
-export const updateProduct = async (req, res, next) => {
+// ====================== Admin ======================
+
+// POST /api/admin/products
+export const createProduct = async (req, res) => {
   try {
-    const p = await Product.findById(req.params.id);
-    if (!p) return res.status(404).json({ message: "Product not found" });
-    Object.assign(p, req.body);
-    await p.save();
-    res.json(p);
-  } catch (err) {
-    next(err);
+    const { name, price, description, stock } = req.body;
+    const product = new Product({ name, price, description, stock });
+    const savedProduct = await product.save();
+    res.status(201).json(savedProduct);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to create product" });
   }
 };
 
-export const deleteProduct = async (req, res, next) => {
+// PUT /api/admin/products/:id
+export const updateProduct = async (req, res) => {
   try {
-    const p = await Product.findById(req.params.id);
-    if (!p) return res.status(404).json({ message: "Product not found" });
-    await p.deleteOne();
-    res.json({ message: "Deleted" });
-  } catch (err) {
-    next(err);
+    const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
+    if (!product) return res.status(404).json({ message: "Product not found" });
+    res.json(product);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to update product" });
+  }
+};
+
+// DELETE /api/admin/products/:id
+export const deleteProduct = async (req, res) => {
+  try {
+    const product = await Product.findByIdAndDelete(req.params.id);
+    if (!product) return res.status(404).json({ message: "Product not found" });
+    res.json({ message: "Product deleted" });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to delete product" });
   }
 };

@@ -7,20 +7,30 @@ const Login = () => {
   const navigate = useNavigate();
   const [error, setError] = useState(null);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const credentials = {
-      email: e.target.email.value,
-      password: e.target.password.value,
-    };
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   const credentials = {
+  //     email: e.target.email.value,
+  //     password: e.target.password.value,
+  //   };
 
-    try {
-      await login(credentials);
-      navigate("/");
-    } catch (err) {
-      setError(err.response?.data?.message || "Login failed");
-    }
-  };
+  //   try {
+  //     await login(credentials);
+  //     navigate("/");
+  //   } catch (err) {
+  //     setError(err.response?.data?.message || "Login failed");
+  //   }
+  // };
+
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    await login(email, password);
+    navigate("/"); // after login
+  } catch (err) {
+    alert("Login failed");
+  }
+};
 
   return (
     <section className="flex items-center justify-center min-h-screen bg-[#020b12] text-white px-4">

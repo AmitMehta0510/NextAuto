@@ -10,12 +10,13 @@ import { protect, adminOnly } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
+// Admin product management
 router.route("/")
-  .get(getProducts)
-  .post(protect, adminOnly, createProduct);
+  .get(protect, adminOnly, getProducts)   // list all products
+  .post(protect, adminOnly, createProduct); // create product
 
 router.route("/:id")
-  .get(getProductById)
+  .get(protect, adminOnly, getProductById)
   .put(protect, adminOnly, updateProduct)
   .delete(protect, adminOnly, deleteProduct);
 

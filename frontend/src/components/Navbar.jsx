@@ -19,11 +19,12 @@ const Navbar = () => {
         <Link to="/cart" className="hover:text-cyan-400 transition">Cart</Link>
         {user ? (
           <>
-            <Link to="/orders" className="hover:text-cyan-400 transition">Orders</Link>
+            <Link to="/orders" className="hover:text- cyan-400 transition">Orders</Link>
             <Link to="/profile" className="hover:text-cyan-400 transition">Profile</Link>
-            {user.role === "admin" && (
-              <Link to="/admin/dashboard" className="hover:text-cyan-400 transition">Admin</Link>
-            )}
+            {user?.isAdmin && (
+  <Link to="/admin/dashboard" className="text-blue-600">Admin Dashboard</Link>
+)}
+
             <button
               onClick={logout}
               className="ml-4 bg-cyan-500 hover:bg-cyan-600 px-4 py-2 rounded-lg font-semibold transition"
