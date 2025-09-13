@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { HashLink } from "react-router-hash-link";
 import {
   FaFacebookF,
   FaTwitter,
@@ -7,32 +8,53 @@ import {
   FaWhatsapp,
 } from "react-icons/fa";
 import NextAuto from '../../public/NextAuto.png'
+import { useNavigate, useLocation } from "react-router-dom";
 
 const Footer = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleHomeClick = (e) => {
+    e.preventDefault();
+    if (location.pathname === "/") {
+      // Already on home, just scroll to top
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      // Navigate to home, then scroll to top
+      navigate("/");
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }, 100);
+    }
+  };
   return (
     <footer className="bg-[#07111f] text-gray-300 py-8">
       <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between px-6">
         {/* Left Navigation */}
         <ul className="flex flex-wrap justify-center lg:justify-start gap-6 mb-6 lg:mb-0 text-sm font-medium">
           <li>
-            <Link to="/" className="hover:text-green-400 transition">
+            <a
+              href="/"
+              onClick={handleHomeClick}
+              className="hover:text-green-400 transition"
+            >
               Home
-            </Link>
+            </a>
           </li>
           <li>
-            <Link to="/features" className="hover:text-green-400 transition">
+            <HashLink smooth to="/#features" className="hover:text-green-400 transition">
               Features
-            </Link>
+            </HashLink>
           </li>
           <li>
-            <Link to="/applications" className="hover:text-green-400 transition">
+            <HashLink smooth to="/#our-products" className="hover:text-green-400 transition">
               Applications
-            </Link>
+            </HashLink>
           </li>
           <li>
-            <Link to="/contact" className="hover:text-green-400 transition">
+            <HashLink smooth to="/#contact-us" className="hover:text-green-400 transition">
               Contact
-            </Link>
+            </HashLink>
           </li>
           <li>
             <Link

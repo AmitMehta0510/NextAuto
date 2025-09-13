@@ -19,10 +19,14 @@ import Dashboard from "../pages/Admin/Dashboard";
 import ManageProducts from "../pages/Admin/ManageProducts";
 import ManageOrders from "../pages/Admin/ManageOrders";
 import ManageUsers from "../pages/Admin/ManageUsers";
+import PrivacyPolicy from "../components/HomeComponents/PrivacyPolicy";
+import ContactUs from "../components/HomeComponents/ContactUs";
+import ScrollToTop from "../components/common/ScrollToTop.jsx";
 
 const AppRoutes = () => {
   return (
     <>
+      <ScrollToTop/>
       <Routes>
         {/* Public Routes */}
         <Route element={<MainLayout />}>
@@ -32,6 +36,8 @@ const AppRoutes = () => {
           <Route path="/product/:id" element={<ProductDetails />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy/>} />
+          <Route path="/contact" element={<ContactUs/>} />
         </Route>
 
         {/* Protected Routes */}
