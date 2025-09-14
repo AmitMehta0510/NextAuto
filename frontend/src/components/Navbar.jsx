@@ -22,8 +22,8 @@ const Navbar = () => {
             <Link to="/orders" className="hover:text- cyan-400 transition">Orders</Link>
             <Link to="/profile" className="hover:text-cyan-400 transition">Profile</Link>
             {user?.isAdmin && (
-  <Link to="/admin/dashboard" className="text-blue-600">Admin Dashboard</Link>
-)}
+              <Link to="/admin" className="text-blue-600">Admin Dashboard</Link>
+            )}
 
             <button
               onClick={logout}

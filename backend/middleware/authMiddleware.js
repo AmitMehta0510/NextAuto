@@ -9,9 +9,12 @@ export const protect = async (req, res, next) => {
   if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
     try {
       token = req.headers.authorization.split(" ")[1];
-
+      console.log("Token in middleware: ", token);
+      console.log(">>>[in middleware] process.env.JWT_SECRET: ", process.env.JWT_SECRET)
+      
       // Verify token
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      console.log("DECODED in middleware: ", decoded);
 
       // Attach user (without password) to request
       req.user = await User.findById(decoded.id).select("-password");
@@ -34,6 +37,7 @@ export const protect = async (req, res, next) => {
 
 // Admin-only middleware
 export const adminOnly = (req, res, next) => {
+  // console.log("MIDDLEWARE: ", req.user);
   if (req.user && req.user.isAdmin) {
     return next();
   }

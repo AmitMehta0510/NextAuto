@@ -1,8 +1,9 @@
 import User from "../models/User.js";
 import jwt from "jsonwebtoken";
 
-const signToken = (id, role) =>
-  jwt.sign({ id, role }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN || "7d" });
+const signToken = (id, isAdmin) =>
+  jwt.sign({ id, isAdmin }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN || "7d" });
+  console.log(">>>[in signup] process.env.JWT_SECRET ", process.env.JWT_SECRET)
 
 export const register = async (req, res, next) => {
   try {
@@ -13,9 +14,10 @@ export const register = async (req, res, next) => {
     if (exists) return res.status(400).json({ message: "Email already in use" });
 
     const user = await User.create({ name, email, phone, password });
-    const token = signToken(user._id, user.role);
+    // const token = signToken(user._id, user.role);
+    const token = signToken(user._id, user.isAdmin);
     res.status(201).json({
-      user: { id: user._id, name: user.name, email: user.email, role: user.role },
+      user: { id: user._id, name: user.name, email: user.email, role: user.role, isAdmin: user.isAdmin },
       token
     });
   } catch (err) {
@@ -34,9 +36,10 @@ export const login = async (req, res, next) => {
     const ok = await user.matchPassword(password);
     if (!ok) return res.status(400).json({ message: "Invalid credentials" });
 
-    const token = signToken(user._id, user.role);
+    // const token = signToken(user._id, user.role);
+    const token = signToken(user._id, user.isAdmin);
     res.json({
-      user: { id: user._id, name: user.name, email: user.email, role: user.role },
+      user: { id: user._id, name: user.name, email: user.email, role: user.role, isAdmin: user.isAdmin },
       token
     });
   } catch (err) {

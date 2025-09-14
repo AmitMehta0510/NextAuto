@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import Card from "../../components/common/Card";
 import { Link } from "react-router-dom";
 import API from "../../utils/api";
+import axios from "axios";
+import AuthContext from "../../context/AuthContext.jsx";
 
 import {
   BarChart,
@@ -17,17 +19,34 @@ import {
 const Dashboard = () => {
   const [stats, setStats] = useState(null);
   const [salesData, setSalesData] = useState([]);
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
+    const token = user.token;
+
+    console.log("Token in dashboard: ", token);
+    if (!token) {
+      console.error("No token found in localStorage");
+      return;
+    }
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
     // fetch stats
-    API.get("/admin/stats")
+    axios
+      .get("http://localhost:5000/api/admin/stats", config)
       .then((res) => setStats(res.data))
-      .catch((err) => console.error(err));
+      .catch((err) => console.error("Error fetching stats:", err));
 
     // fetch sales report (monthly)
-    API.get("/admin/reports/sales")
+    axios
+      .get("http://localhost:5000/api/admin/reports/sales", config)
       .then((res) => setSalesData(res.data))
-      .catch((err) => console.error(err));
+      .catch((err) => console.error("Error fetching sales report:", err));
   }, []);
 
   if (!stats) return <p>Loading dashboard...</p>;
