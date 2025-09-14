@@ -61,7 +61,7 @@ const AppRoutes = () => {
         }
       >
         <Route path="/admin" element={<Dashboard />} /> {/* changed default admin path */}
-        <Route path="/admin/dashboard" element={<Dashboard />} />
+        {/* <Route path="/admin/dashboard" element={<Dashboard />} /> */}
         <Route path="/admin/products" element={<ManageProducts />} />
         <Route path="/admin/orders" element={<ManageOrders />} />
         <Route path="/admin/users" element={<ManageUsers />} />
@@ -70,6 +70,7 @@ const AppRoutes = () => {
       {/* 404 */}
       <Route path="*" element={<NotFound />} />
     </Routes>
+    </>
   );
 };
 

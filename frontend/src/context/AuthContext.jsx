@@ -13,14 +13,14 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  const login = async (email, password) => {
-    const { data } = await API.post("/users/login", { email, password });
+  const login = async (userData) => {
+    const { data } = await API.post("/users/login", userData);
     setUser(data);
     localStorage.setItem("userInfo", JSON.stringify(data));
   };
 
-  const register = async (name, email, password) => {
-    const { data } = await API.post("/users/register", { name, email, password });
+  const register = async (userData) => {
+    const { data } = await API.post("/users/register", userData);
     setUser(data);
     localStorage.setItem("userInfo", JSON.stringify(data));
   };

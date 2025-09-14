@@ -7,6 +7,7 @@ import generateToken from "../utils/generateToken.js";
 export const registerUser = async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
+    console.log("req.body: ", req.body);
 
     const userExists = await User.findOne({ email });
     if (userExists) {
@@ -27,6 +28,7 @@ export const registerUser = async (req, res, next) => {
       token: generateToken(user._id, user.isAdmin),
     });
   } catch (err) {
+    console.log("Registration error: ", err);
     next(err);
   }
 };
