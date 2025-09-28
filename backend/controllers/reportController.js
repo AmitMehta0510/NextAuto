@@ -1,13 +1,44 @@
-import Order from "../models/Order.js";
+// import Order from "../models/Order.js";
 
+
+// export const getSalesReport = async (req, res, next) => {
+//   try {
+//     const report = await Order.aggregate([
+//       {
+//         $group: {
+//           _id: { month: { $month: "$createdAt" } },
+//           sales: { $sum: "$total" }, // assuming "total" is order total
+//         },
+//       },
+//       { $sort: { "_id.month": 1 } },
+//     ]);
+
+//     // Map month numbers to names
+//     const monthNames = [
+//       "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+//       "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+//     ];
+
+//     const formatted = report.map((r) => ({
+//       month: monthNames[r._id.month - 1],
+//       sales: r.sales,
+//     }));
+
+//     res.json(formatted);
+//   } catch (err) {
+//     next(err);
+//   }
+// };
+import Order from "../models/Order.js";
 
 export const getSalesReport = async (req, res, next) => {
   try {
     const report = await Order.aggregate([
       {
         $group: {
+          // Use createdAt month
           _id: { month: { $month: "$createdAt" } },
-          sales: { $sum: "$total" }, // assuming "total" is order total
+          sales: { $sum: "$totalPrice" }, // Fix: sum totalPrice
         },
       },
       { $sort: { "_id.month": 1 } },
@@ -16,15 +47,20 @@ export const getSalesReport = async (req, res, next) => {
     // Map month numbers to names
     const monthNames = [
       "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
     ];
 
-    const formatted = report.map((r) => ({
-      month: monthNames[r._id.month - 1],
-      sales: r.sales,
+    // Industry ready: Fill missing months (show months with 0 sales as 0)
+    const allMonths = Array.from({ length: 12 }, (_, i) => ({
+      month: monthNames[i],
+      sales: 0,
     }));
 
-    res.json(formatted);
+    report.forEach((r) => {
+      allMonths[r._id.month - 1].sales = r.sales;
+    });
+
+    res.json(allMonths);
   } catch (err) {
     next(err);
   }

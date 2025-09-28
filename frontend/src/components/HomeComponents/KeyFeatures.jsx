@@ -47,7 +47,7 @@ export default function KeyFeatures() {
   return (
     <div className="py-12 bg-[#020b12] text-white">
       <h1 className="text-3xl font-bold mb-6 text-center">
-        Key <span className="text-cyan-400">Features</span>
+        Key <span className="text-cyan-400">Features</span> of our products
       </h1>
       <p className="max-w-2xl mx-auto text-center text-gray-400 mb-10">
         Discover the powerful features designed to keep your systems efficient,

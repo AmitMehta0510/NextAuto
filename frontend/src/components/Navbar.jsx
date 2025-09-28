@@ -7,24 +7,22 @@ const Navbar = () => {
   console.log("USER from navbar: ", user);
 
   return (
-    <nav className="bg-[#001F2E] text-white px-8 py-4 flex justify-between items-center shadow-lg">
+    <nav className="sticky top-0 z-50 bg-[#001F2E] text-white px-8 py-4 flex justify-between items-center shadow-lg">
       {/* Logo */}
       <Link to="/" className="text-2xl font-extrabold tracking-wide text-cyan-400">
         NextAuto
       </Link>
-
       {/* Nav Links */}
       <div className="hidden md:flex items-center space-x-8 text-lg font-medium">
         <Link to="/" className="hover:text-cyan-400 transition">Home</Link>
         <Link to="/cart" className="hover:text-cyan-400 transition">Cart</Link>
         {user ? (
           <>
-            <Link to="/orders" className="hover:text- cyan-400 transition">Orders</Link>
+            <Link to="/orders" className="hover:text-cyan-400 transition">Orders</Link>
             <Link to="/profile" className="hover:text-cyan-400 transition">Profile</Link>
             {user?.isAdmin && (
               <Link to="/admin" className="text-blue-600">Admin Dashboard</Link>
             )}
-
             <button
               onClick={logout}
               className="ml-4 bg-cyan-500 hover:bg-cyan-600 px-4 py-2 rounded-lg font-semibold transition"
@@ -39,7 +37,6 @@ const Navbar = () => {
           </>
         )}
       </div>
-
       {/* Mobile Menu (Hamburger) */}
       <div className="md:hidden">
         <button className="text-cyan-400 focus:outline-none">
@@ -57,5 +54,4 @@ const Navbar = () => {
     </nav>
   );
 };
-
 export default Navbar;

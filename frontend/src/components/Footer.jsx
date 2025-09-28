@@ -7,7 +7,7 @@ import {
   FaLinkedinIn,
   FaWhatsapp,
 } from "react-icons/fa";
-import NextAuto from '../../public/NextAuto.png'
+import NextAuto from "../../public/NextAuto.png";
 import { useNavigate, useLocation } from "react-router-dom";
 
 const Footer = () => {
@@ -42,17 +42,29 @@ const Footer = () => {
             </a>
           </li>
           <li>
-            <HashLink smooth to="/#features" className="hover:text-green-400 transition">
+            <HashLink
+              smooth
+              to="/#features"
+              className="hover:text-green-400 transition"
+            >
               Features
             </HashLink>
           </li>
           <li>
-            <HashLink smooth to="/#our-products" className="hover:text-green-400 transition">
-              Applications
+            <HashLink
+              smooth
+              to="/#our-products"
+              className="hover:text-green-400 transition"
+            >
+              Products
             </HashLink>
           </li>
           <li>
-            <HashLink smooth to="/#contact-us" className="hover:text-green-400 transition">
+            <HashLink
+              smooth
+              to="/#contact-us"
+              className="hover:text-green-400 transition"
+            >
               Contact
             </HashLink>
           </li>
@@ -69,7 +81,9 @@ const Footer = () => {
         {/* Logo + Brand */}
         <div className="flex items-center space-x-2 mb-6 lg:mb-0">
           <img src={NextAuto} alt="" className="h-16" />
-          <div className="text-[#2edaf1] font-semibold text-2xl tracking-wider">NextAuto</div>
+          <div className="text-[#2edaf1] font-semibold text-2xl tracking-wider">
+            NextAuto
+          </div>
         </div>
 
         {/* Right Navigation (Socials) */}

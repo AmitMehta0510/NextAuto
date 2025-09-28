@@ -183,6 +183,8 @@ const Dashboard = () => {
 
         setStats(statsRes.data);
         setSalesData(salesRes.data);
+        console.log("Fetched stats:", statsRes.data);
+        console.log("Fetched sales data:", salesRes.data);
       } catch (err) {
         setError("Failed to load dashboard data. Try again later.");
       } finally {
@@ -252,7 +254,11 @@ const Dashboard = () => {
                   color: "#fff",
                 }}
               />
-              <Bar dataKey="sales" fill="url(#colorSales)" radius={[8, 8, 0, 0]} />
+              <Bar
+                dataKey="sales"
+                fill="url(#colorSales)"
+                radius={[8, 8, 0, 0]}
+              />
               <defs>
                 <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.9} />

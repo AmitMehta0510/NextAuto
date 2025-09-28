@@ -59,7 +59,6 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute adminOnly>
               <AdminLayout />
-              
             </ProtectedRoute>
           }
         >

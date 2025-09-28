@@ -6,7 +6,7 @@ import generateToken from "../utils/generateToken.js";
 // @access  Public
 export const registerUser = async (req, res, next) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, phone } = req.body;
     console.log("req.body: ", req.body);
 
     const userExists = await User.findOne({ email });
@@ -14,7 +14,8 @@ export const registerUser = async (req, res, next) => {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    const user = await User.create({ name, email, password, isAdmin: false });
+    // Save phone if provided
+    const user = await User.create({ name, email, password, phone, isAdmin: false });
 
     if (!user) {
       return res.status(400).json({ message: "Invalid user data" });
@@ -24,6 +25,7 @@ export const registerUser = async (req, res, next) => {
       _id: user._id,
       name: user.name,
       email: user.email,
+      phone: user.phone,
       isAdmin: user.isAdmin,
       token: generateToken(user._id, user.isAdmin),
     });
@@ -50,6 +52,7 @@ export const loginUser = async (req, res, next) => {
       _id: user._id,
       name: user.name,
       email: user.email,
+      phone: user.phone,
       isAdmin: user.isAdmin,
       token: generateToken(user._id, user.isAdmin),
     });
@@ -88,6 +91,7 @@ export const updateUserProfile = async (req, res, next) => {
 
     user.name = req.body.name || user.name;
     user.email = req.body.email || user.email;
+    user.phone = req.body.phone || user.phone;
     if (req.body.password) {
       user.password = req.body.password;
     }
@@ -98,6 +102,7 @@ export const updateUserProfile = async (req, res, next) => {
       _id: updatedUser._id,
       name: updatedUser.name,
       email: updatedUser.email,
+      phone: updatedUser.phone,
       isAdmin: updatedUser.isAdmin,
       token: generateToken(updatedUser._id, updatedUser.isAdmin),
     });
@@ -162,12 +167,13 @@ export const promoteUserToAdmin = async (req, res, next) => {
 
 export const createUser = async (req, res, next) => {
   try {
-    const { name, email, password, isAdmin } = req.body;
+    const { name, email, password, isAdmin, phone } = req.body;
     const userExists = await User.findOne({ email });
     if (userExists) {
       return res.status(400).json({ message: "User already exists" });
     }
-    const user = await User.create({ name, email, password: password || "123456", isAdmin });
+    // Save phone if provided
+    const user = await User.create({ name, email, password: password || "123456", isAdmin, phone });
     res.status(201).json(user);
   } catch (err) {
     next(err);
@@ -181,8 +187,12 @@ export const updateUser = async (req, res, next) => {
 
     user.name = req.body.name || user.name;
     user.email = req.body.email || user.email;
+    user.phone = req.body.phone || user.phone; // Ensure phone gets updated
     if (req.body.isAdmin !== undefined) {
       user.isAdmin = req.body.isAdmin;
+    }
+    if (req.body.isActive !== undefined) {
+      user.isActive = req.body.isActive;
     }
 
     const updatedUser = await user.save();
