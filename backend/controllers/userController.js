@@ -159,3 +159,35 @@ export const promoteUserToAdmin = async (req, res, next) => {
     next(err);
   }
 };
+
+export const createUser = async (req, res, next) => {
+  try {
+    const { name, email, password, isAdmin } = req.body;
+    const userExists = await User.findOne({ email });
+    if (userExists) {
+      return res.status(400).json({ message: "User already exists" });
+    }
+    const user = await User.create({ name, email, password: password || "123456", isAdmin });
+    res.status(201).json(user);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const updateUser = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    user.name = req.body.name || user.name;
+    user.email = req.body.email || user.email;
+    if (req.body.isAdmin !== undefined) {
+      user.isAdmin = req.body.isAdmin;
+    }
+
+    const updatedUser = await user.save();
+    res.json(updatedUser);
+  } catch (err) {
+    next(err);
+  }
+};

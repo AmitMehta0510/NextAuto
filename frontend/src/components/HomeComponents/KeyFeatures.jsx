@@ -26,8 +26,7 @@ export default function KeyFeatures() {
     {
       id: 4,
       title: "Energy Efficiency",
-      description:
-        "Smart algorithms to optimize generator runtime",
+      description: "Smart algorithms to optimize generator runtime",
       icon: "🍃",
     },
     {
@@ -40,8 +39,7 @@ export default function KeyFeatures() {
     {
       id: 6,
       title: "Smart Notifications",
-      description:
-        "Instant alerts for power failures and maintenance updates",
+      description: "Instant alerts for power failures and maintenance updates",
       icon: "🔔",
     },
   ];
@@ -52,14 +50,16 @@ export default function KeyFeatures() {
         Key <span className="text-cyan-400">Features</span>
       </h1>
       <p className="max-w-2xl mx-auto text-center text-gray-400 mb-10">
-        Discover the powerful features designed to keep your systems efficient, secure, 
-        and easy to manage.
+        Discover the powerful features designed to keep your systems efficient,
+        secure, and easy to manage.
       </p>
 
       {features.length === 0 ? (
-        <p className="text-center text-gray-400">No features available right now.</p>
+        <p className="text-center text-gray-400">
+          No features available right now.
+        </p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-6xl mx-auto px-4 cursor-pointer">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-6xl mx-auto px-4">
           {features.map((f) => (
             <div
               key={f.id}

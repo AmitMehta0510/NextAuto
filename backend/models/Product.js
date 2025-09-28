@@ -9,8 +9,9 @@ const productSchema = new mongoose.Schema(
     image: { type: String }, // URL to image (Cloudinary/S3/local)
     stock: { type: Number, default: 0 },
     tags: [{ type: String }],
-    statusBadge: { type: String }, // e.g. "New", "Premium"
-    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" }
+    statusBadge: { type: String }, // e.g. "New", "Premium",
+    rating: { type: Number, default: 0, min: 0, max: 5 },
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   },
   { timestamps: true }
 );

@@ -70,7 +70,7 @@ const ContactUs = () => {
                 </div>
                 <div>
                   <h4 className="font-semibold text-lg">Phone Number</h4>
-                  <p className="text-gray-400">+91 8446577303, 6375036710</p>
+                  <p className="text-gray-400">+91 8446577303, 6375036710, 7877660616</p>
                 </div>
               </div>
             </div>
@@ -129,9 +129,9 @@ const ContactUs = () => {
                 required
               >
                 <option value="">Select Application</option>
-                <option value="industrial">Industrial</option>
-                <option value="agriculture">Agriculture</option>
-                <option value="residential">Residential</option>
+                <option className="text-gray-500" value="industrial">Industrial</option>
+                <option className="text-gray-500" value="agriculture">Agriculture</option>
+                <option className="text-gray-500" value="residential">Residential</option>
               </select>
               <textarea
                 name="message"

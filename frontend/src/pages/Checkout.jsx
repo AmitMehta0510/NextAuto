@@ -1,84 +1,270 @@
-// import React, { useState } from "react";
-// import { placeOrder } from "../services/orderService";
-// import Button from "../components/ui/Button";
-// import { useNavigate } from "react-router-dom";
-
-// const Checkout = () => {
-//   const navigate = useNavigate();
-//   const [loading, setLoading] = useState(false);
-
-//   const handleCheckout = async (e) => {
-//     e.preventDefault();
-//     setLoading(true);
-//     const formData = {
-//       address: e.target.address.value,
-//       paymentMethod: e.target.paymentMethod.value,
-//     };
-//     await placeOrder(formData);
-//     setLoading(false);
-//     navigate("/orders");
-//   };
-
-//   return (
-//     <div className="p-6 max-w-lg mx-auto">
-//       <h2 className="text-2xl font-semibold mb-4">Checkout</h2>
-//       <form onSubmit={handleCheckout} className="space-y-4">
-//         <textarea
-//           name="address"
-//           placeholder="Delivery Address"
-//           className="w-full border p-2 rounded"
-//           required
-//         />
-//         <select
-//           name="paymentMethod"
-//           className="w-full border p-2 rounded"
-//           required
-//         >
-//           <option value="COD">Cash on Delivery</option>
-//           <option value="Card">Credit/Debit Card</option>
-//         </select>
-//         <Button type="submit" className="w-full" disabled={loading}>
-//           {loading ? "Placing Order..." : "Place Order"}
-//         </Button>
-//       </form>
-//     </div>
-//   );
-// };
-
-// export default Checkout;
-
 import React, { useState } from "react";
-import API from "../utils/api";
 import { useCart } from "../context/CartContext";
+import API from "../utils/api";
 import { useNavigate } from "react-router-dom";
 
 const Checkout = () => {
   const { cart, clearCart } = useCart();
-  const [address, setAddress] = useState("");
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleOrder = async () => {
-    const items = cart.map(c => ({ product: c._id, qty: 1 }));
-    await API.post("/orders", { items, address });
-    clearCart();
-    navigate("/orders");
+  console.log("Cart at Checkout:", cart);
+
+  // Shipping form state
+  const [shipping, setShipping] = useState({
+    address: "",
+    city: "",
+    postalCode: "",
+    country: "",
+  });
+
+  // Payment method
+  const [paymentMethod, setPaymentMethod] = useState("COD");
+  const [upiId, setUpiId] = useState("");
+  const [cardDetails, setCardDetails] = useState({
+    number: "",
+    expiry: "",
+    cvv: "",
+  });
+
+  const handleChange = (e) => {
+    setShipping({ ...shipping, [e.target.name]: e.target.value });
+  };
+
+  const placeOrder = async () => {
+    if (!cart.length) return setError("🛒 Your cart is empty.");
+
+    if (
+      !shipping.address ||
+      !shipping.city ||
+      !shipping.postalCode ||
+      !shipping.country
+    ) {
+      return setError("📦 Please fill in all shipping details.");
+    }
+
+    try {
+      setLoading(true);
+      setError("");
+
+      const orderData = {
+        orderItems: cart.map((item) => ({
+          product: item.product._id, // ✅ reference correct product ID
+          quantity: item.quantity,
+          priceAtPurchase: item.product.price, // ✅ use product.price
+        })),
+        totalPrice: cart.reduce(
+          (sum, item) => sum + item.product.price * item.quantity,
+          0
+        ),
+        shippingAddress: shipping,
+        paymentMethod,
+      };
+
+      await API.post("/orders", orderData);
+
+      clearCart();
+      navigate("/orders");
+    } catch (err) {
+      setError(err.response?.data?.message || "❌ Order failed. Try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-6">Checkout</h1>
-      <textarea
-        placeholder="Shipping Address"
-        value={address}
-        onChange={(e) => setAddress(e.target.value)}
-        className="border w-full p-3 mb-4 rounded"
-      />
-      <button
-        onClick={handleOrder}
-        className="bg-green-600 text-white px-4 py-2 rounded"
-      >
-        Place Order
-      </button>
+    <div className="max-w-6xl mx-auto p-6 text-white">
+      <h1 className="text-3xl font-bold mb-8 text-center">Checkout</h1>
+
+      {error && (
+        <div className="mb-6 bg-red-500 text-white px-4 py-3 rounded-lg shadow">
+          {error}
+        </div>
+      )}
+
+      <div className="grid md:grid-cols-3 gap-8">
+        {/* Cart Items */}
+        <div className="md:col-span-2 space-y-4">
+          {cart.length === 0 ? (
+            <p className="text-gray-400">Your cart is empty.</p>
+          ) : (
+            cart.map((item) => (
+              <div
+                key={item.product._id}
+                className="flex items-center bg-[#001F2E] rounded-xl p-4 shadow hover:shadow-lg transition"
+              >
+                <img
+                  src={item.product.image || "https://via.placeholder.com/100"}
+                  alt={item.product.name}
+                  className="w-20 h-20 object-cover rounded-md"
+                />
+                <div className="ml-4 flex-1">
+                  <h2 className="text-gray-500 font-semibold text-lg">
+                    {item.product.name}
+                  </h2>
+                  <p className="text-gray-400 text-sm">Qty : {item.quantity}</p>
+                  <p className="text-cyan-400 font-semibold">
+                    ₹{item.product.price} each
+                  </p>
+                </div>
+                <p className="font-bold text-lg">
+                  ₹{item.product.price * item.quantity}
+                </p>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Shipping + Summary */}
+        <div className="bg-[#001F2E] rounded-xl p-6 shadow-lg h-fit space-y-6">
+          <h2 className="text-xl font-bold border-b border-gray-700 pb-3">
+            Shipping Details
+          </h2>
+
+          <div className="space-y-3">
+            <input
+              type="text"
+              name="address"
+              value={shipping.address}
+              onChange={handleChange}
+              placeholder="Street Address"
+              className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+            />
+            <input
+              type="text"
+              name="city"
+              value={shipping.city}
+              onChange={handleChange}
+              placeholder="City"
+              className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+            />
+            <input
+              type="text"
+              name="postalCode"
+              value={shipping.postalCode}
+              onChange={handleChange}
+              placeholder="Postal Code"
+              className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+            />
+            <input
+              type="text"
+              name="country"
+              value={shipping.country}
+              onChange={handleChange}
+              placeholder="Country"
+              className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+            />
+          </div>
+
+          {/* Payment Method */}
+          <div>
+            <h2 className="text-xl font-bold border-b border-gray-700 pb-3 mb-4">
+              Payment Method
+            </h2>
+            <div className="space-y-3">
+              {["COD", "UPI", "Card"].map((method) => (
+                <label
+                  key={method}
+                  className={`flex items-center space-x-3 p-3 rounded-lg cursor-pointer border ${
+                    paymentMethod === method
+                      ? "border-cyan-400 bg-gray-800"
+                      : "border-gray-700"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value={method}
+                    checked={paymentMethod === method}
+                    onChange={(e) => setPaymentMethod(e.target.value)}
+                    className="accent-cyan-400"
+                  />
+                  <span>{method === "COD" ? "Cash on Delivery" : method}</span>
+                </label>
+              ))}
+            </div>
+
+            {/* Conditional Inputs */}
+            {paymentMethod === "UPI" && (
+              <input
+                type="text"
+                value={upiId}
+                onChange={(e) => setUpiId(e.target.value)}
+                placeholder="Enter your UPI ID (e.g., user@upi)"
+                className="mt-4 w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+              />
+            )}
+
+            {paymentMethod === "Card" && (
+              <div className="mt-4 space-y-3">
+                <input
+                  type="text"
+                  placeholder="Card Number"
+                  value={cardDetails.number}
+                  onChange={(e) =>
+                    setCardDetails({ ...cardDetails, number: e.target.value })
+                  }
+                  className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+                />
+                <div className="flex gap-3">
+                  <input
+                    type="text"
+                    placeholder="MM/YY"
+                    value={cardDetails.expiry}
+                    onChange={(e) =>
+                      setCardDetails({ ...cardDetails, expiry: e.target.value })
+                    }
+                    className="flex-1 p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+                  />
+                  <input
+                    type="password"
+                    placeholder="CVV"
+                    value={cardDetails.cvv}
+                    onChange={(e) =>
+                      setCardDetails({ ...cardDetails, cvv: e.target.value })
+                    }
+                    className="w-24 p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Order Summary */}
+          <div>
+            <h2 className="text-xl font-bold border-b border-gray-700 pb-3 mb-4">
+              Order Summary
+            </h2>
+            <div className="flex justify-between mb-2">
+              <span>
+                Items ({cart.reduce((sum, i) => sum + i.quantity, 0)})
+              </span>
+              <span>
+                ₹{cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0)}
+              </span>
+            </div>
+            <div className="flex justify-between mb-2 text-gray-400">
+              <span>Shipping</span>
+              <span>Free</span>
+            </div>
+            <div className="flex justify-between font-bold text-lg mt-4 border-t border-gray-700 pt-3">
+              <span>Total</span>
+              <span>
+                ₹{cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0)}
+              </span>
+            </div>
+          </div>
+
+          <button
+            onClick={placeOrder}
+            disabled={loading || !cart.length}
+            className="mt-4 w-full bg-green-600 hover:bg-green-700 disabled:opacity-50 px-6 py-3 rounded-xl font-semibold shadow-md transition-all"
+          >
+            {loading ? "Placing Order..." : "Place Order"}
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

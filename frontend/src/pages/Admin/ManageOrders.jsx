@@ -5,16 +5,18 @@ import Button from "../../components/common/Button.jsx";
 const ManageOrders = () => {
   const [orders, setOrders] = useState([]);
 
- const fetchOrders = () => {
-  API.get("/api/admin/orders").then((res) => setOrders(res.data));
-};
+  const fetchOrders = () => {
+    API.get("/admin/orders").then((res) => setOrders(res.data));
+  };
 
-  useEffect(() => { fetchOrders(); }, []);
+  useEffect(() => {
+    fetchOrders();
+  }, []);
 
-const updateStatus = async (id, status) => {
-  await API.put(`/api/admin/orders/${id}`, { status });
-  fetchOrders();
-};
+  const updateStatus = async (id, status) => {
+    await API.put(`/admin/orders/${id}`, { status });
+    fetchOrders();
+  };
 
   return (
     <div>
@@ -33,12 +35,21 @@ const updateStatus = async (id, status) => {
           {orders.map((o) => (
             <tr key={o._id} className="border-t">
               <td className="p-2">{o.user?.name}</td>
-              <td className="p-2">{o.items.map(i => i.product?.name).join(", ")}</td>
-              <td className="p-2">${o.total}</td>
+              <td className="p-2">
+                {o.orderItems.map((i) => i.product?.name).join(", ")}
+              </td>
+              <td className="p-2">${o.totalPrice}</td>
               <td className="p-2">{o.status}</td>
               <td className="p-2 space-x-2">
-                <Button onClick={() => updateStatus(o._id, "Shipped")}>Mark Shipped</Button>
-                <Button onClick={() => updateStatus(o._id, "Delivered")} className="bg-green-600">Mark Delivered</Button>
+                <Button onClick={() => updateStatus(o._id, "Shipped")}>
+                  Mark Shipped
+                </Button>
+                <Button
+                  onClick={() => updateStatus(o._id, "Delivered")}
+                  className="bg-green-600"
+                >
+                  Mark Delivered
+                </Button>
               </td>
             </tr>
           ))}

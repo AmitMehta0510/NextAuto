@@ -8,29 +8,60 @@ export const CartProvider = ({ children }) => {
 
   const addToCart = (product) => {
     setCart((prevCart) => {
-      // check if product already exists
-      const exists = prevCart.find((item) => item._id === product._id);
+      const exists = prevCart.find((item) => item.product._id === product._id);
       if (exists) {
         return prevCart.map((item) =>
-          item._id === product._id ? { ...item, qty: item.qty + 1 } : item
+          item.product._id === product._id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
         );
       }
-      return [...prevCart, { ...product, qty: 1 }];
+      return [...prevCart, { product, quantity: 1 }];
     });
   };
 
   const removeFromCart = (id) => {
-    setCart((prevCart) => prevCart.filter((item) => item._id !== id));
+    setCart((prevCart) =>
+      prevCart.filter((item) => item.product._id !== id)
+    );
   };
 
   const clearCart = () => setCart([]);
 
+  const increaseQuantity = (id) => {
+    setCart((prevCart) =>
+      prevCart.map((item) =>
+        item.product._id === id
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      )
+    );
+  };
+
+  const decreaseQuantity = (id) => {
+    setCart((prevCart) =>
+      prevCart.map((item) =>
+        item.product._id === id && item.quantity > 1
+          ? { ...item, quantity: item.quantity - 1 }
+          : item
+      )
+    );
+  };
+
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart }}>
+    <CartContext.Provider
+      value={{
+        cart,
+        addToCart,
+        removeFromCart,
+        clearCart,
+        increaseQuantity,
+        decreaseQuantity,
+      }}
+    >
       {children}
     </CartContext.Provider>
   );
 };
 
-// ✅ Hook for consuming cart
 export const useCart = () => useContext(CartContext);

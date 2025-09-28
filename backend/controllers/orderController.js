@@ -5,29 +5,33 @@ import Order from "../models/Order.js";
 // POST /api/orders
 export const createOrder = async (req, res) => {
   try {
-    const { products, totalPrice, shippingAddress } = req.body;
+    const { orderItems, totalPrice, shippingAddress, paymentMethod } = req.body;
 
     const order = new Order({
       user: req.user._id, // from authMiddleware
-      products,
+      orderItems,
       totalPrice,
       shippingAddress,
+      paymentMethod,
       status: "Pending",
     });
 
     const savedOrder = await order.save();
     res.status(201).json(savedOrder);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Failed to create order" });
   }
 };
 
-// GET /api/orders/my
+// GET /api/orders/my-orders
 export const getMyOrders = async (req, res) => {
   try {
-    const orders = await Order.find({ user: req.user._id }).populate("products");
+    const orders = await Order.find({ user: req.user._id })
+      .populate("orderItems.product", "name price");
     res.json(orders);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Failed to fetch orders" });
   }
 };
@@ -39,9 +43,10 @@ export const getOrders = async (req, res) => {
   try {
     const orders = await Order.find({})
       .populate("user", "name email")
-      .populate("products");
+      .populate("orderItems.product", "name price");
     res.json(orders);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Failed to fetch orders" });
   }
 };
@@ -51,10 +56,11 @@ export const getOrderById = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id)
       .populate("user", "name email")
-      .populate("products");
+      .populate("orderItems.product", "name price");
     if (!order) return res.status(404).json({ message: "Order not found" });
     res.json(order);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Failed to fetch order" });
   }
 };
@@ -64,10 +70,13 @@ export const updateOrder = async (req, res) => {
   try {
     const order = await Order.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
-    });
+    })
+      .populate("user", "name email")
+      .populate("orderItems.product", "name price");
     if (!order) return res.status(404).json({ message: "Order not found" });
     res.json(order);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Failed to update order" });
   }
 };
@@ -79,6 +88,7 @@ export const deleteOrder = async (req, res) => {
     if (!order) return res.status(404).json({ message: "Order not found" });
     res.json({ message: "Order deleted" });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Failed to delete order" });
   }
 };
