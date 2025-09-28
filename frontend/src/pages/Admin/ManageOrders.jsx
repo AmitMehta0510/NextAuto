@@ -1,12 +1,19 @@
+
 import React, { useEffect, useState } from "react";
 import API from "../../utils/api";
-import Button from "../../components/common/Button.jsx";
+import { CheckCircle, XCircle, Truck, PackageCheck, Eye } from "lucide-react";
 
 const ManageOrders = () => {
   const [orders, setOrders] = useState([]);
+  const [selectedOrder, setSelectedOrder] = useState(null);
 
-  const fetchOrders = () => {
-    API.get("/admin/orders").then((res) => setOrders(res.data));
+  const fetchOrders = async () => {
+    try {
+      const { data } = await API.get("/admin/orders");
+      setOrders(data);
+    } catch (err) {
+      console.error("Error fetching orders:", err);
+    }
   };
 
   useEffect(() => {
@@ -14,47 +21,191 @@ const ManageOrders = () => {
   }, []);
 
   const updateStatus = async (id, status) => {
-    await API.put(`/admin/orders/${id}`, { status });
-    fetchOrders();
+    try {
+      await API.put(`/admin/orders/${id}`, { status });
+      fetchOrders();
+    } catch (err) {
+      console.error("Update failed:", err);
+    }
   };
 
   return (
-    <div>
+    <div className="p-6">
+      {/* Header */}
       <h1 className="text-2xl font-bold mb-6">Manage Orders</h1>
-      <table className="w-full border">
-        <thead>
-          <tr className="bg-gray-200">
-            <th className="p-2">User</th>
-            <th className="p-2">Items</th>
-            <th className="p-2">Total</th>
-            <th className="p-2">Status</th>
-            <th className="p-2">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {orders.map((o) => (
-            <tr key={o._id} className="border-t">
-              <td className="p-2">{o.user?.name}</td>
-              <td className="p-2">
-                {o.orderItems.map((i) => i.product?.name).join(", ")}
-              </td>
-              <td className="p-2">${o.totalPrice}</td>
-              <td className="p-2">{o.status}</td>
-              <td className="p-2 space-x-2">
-                <Button onClick={() => updateStatus(o._id, "Shipped")}>
-                  Mark Shipped
-                </Button>
-                <Button
-                  onClick={() => updateStatus(o._id, "Delivered")}
-                  className="bg-green-600"
-                >
-                  Mark Delivered
-                </Button>
-              </td>
+
+      {/* Orders Table */}
+      <div className="overflow-x-auto bg-white shadow rounded-xl">
+        <table className="min-w-full text-sm text-left">
+          <thead className="bg-gray-100 text-gray-700">
+            <tr>
+              <th className="px-4 py-3">User</th>
+              <th className="px-4 py-3">Items</th>
+              <th className="px-4 py-3">Total</th>
+              <th className="px-4 py-3">Payment</th>
+              <th className="px-4 py-3">Status</th>
+              <th className="px-4 py-3">Created</th>
+              <th className="px-4 py-3">Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {orders.map((o) => (
+              <tr key={o._id} className="border-t hover:bg-gray-50 transition">
+                <td className="px-4 py-3">{o.user?.name || "Guest"}</td>
+                <td className="px-4 py-3">
+                  {o.orderItems
+                    .map((i) => `${i.product?.name} x${i.quantity}`)
+                    .join(", ")}
+                </td>
+                <td className="px-4 py-3 font-semibold">
+                  ₹{o.totalPrice.toFixed(2)}
+                </td>
+                <td className="px-4 py-3">{o.paymentMethod}</td>
+                <td className="px-4 py-3">
+                  <span
+                    className={`px-2 py-1 text-xs rounded-full ${
+                      o.status === "Pending"
+                        ? "bg-yellow-100 text-yellow-800"
+                        : o.status === "Confirmed"
+                        ? "bg-blue-100 text-blue-800"
+                        : o.status === "Shipped"
+                        ? "bg-purple-100 text-purple-800"
+                        : o.status === "Delivered"
+                        ? "bg-green-100 text-green-800"
+                        : "bg-red-100 text-red-800"
+                    }`}
+                  >
+                    {o.status}
+                  </span>
+                </td>
+                <td className="px-4 py-3">
+                  {new Date(o.createdAt).toLocaleDateString()}
+                </td>
+                <td className="px-4 py-3 flex gap-3">
+                  {/* Tooltip container */}
+                  <div className="relative group">
+                    <button
+                      onClick={() => setSelectedOrder(o)}
+                      className="text-gray-600 hover:text-gray-900"
+                    >
+                      <Eye size={18} />
+                    </button>
+                    <span className="absolute -top-8 left-1/2 -translate-x-1/2 hidden group-hover:block bg-gray-800 text-white text-xs px-2 py-1 rounded">
+                      View Details
+                    </span>
+                  </div>
+
+                  <div className="relative group">
+                    <button
+                      onClick={() => updateStatus(o._id, "Confirmed")}
+                      className="text-blue-600 hover:text-blue-800"
+                    >
+                      <CheckCircle size={18} />
+                    </button>
+                    <span className="absolute -top-8 left-1/2 -translate-x-1/2 hidden group-hover:block bg-gray-800 text-white text-xs px-2 py-1 rounded">
+                      Mark Confirmed
+                    </span>
+                  </div>
+
+                  <div className="relative group">
+                    <button
+                      onClick={() => updateStatus(o._id, "Shipped")}
+                      className="text-purple-600 hover:text-purple-800"
+                    >
+                      <Truck size={18} />
+                    </button>
+                    <span className="absolute -top-8 left-1/2 -translate-x-1/2 hidden group-hover:block bg-gray-800 text-white text-xs px-2 py-1 rounded">
+                      Mark Shipped
+                    </span>
+                  </div>
+
+                  <div className="relative group">
+                    <button
+                      onClick={() => updateStatus(o._id, "Delivered")}
+                      className="text-green-600 hover:text-green-800"
+                    >
+                      <PackageCheck size={18} />
+                    </button>
+                    <span className="absolute -top-8 left-1/2 -translate-x-1/2 hidden group-hover:block bg-gray-800 text-white text-xs px-2 py-1 rounded">
+                      Mark Delivered
+                    </span>
+                  </div>
+
+                  <div className="relative group">
+                    <button
+                      onClick={() => updateStatus(o._id, "Cancelled")}
+                      className="text-red-600 hover:text-red-800"
+                    >
+                      <XCircle size={18} />
+                    </button>
+                    <span className="absolute -top-8 left-1/2 -translate-x-1/2 hidden group-hover:block bg-gray-800 text-white text-xs px-2 py-1 rounded">
+                      Cancel Order
+                    </span>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Order Detail Drawer */}
+      {selectedOrder && (
+        <div className="fixed inset-0 flex justify-end bg-black bg-opacity-40">
+          <div className="w-full sm:w-[450px] bg-white p-6 shadow-xl overflow-y-auto">
+            <h2 className="text-xl font-semibold mb-4">Order Details</h2>
+
+            <p className="mb-2">
+              <span className="font-semibold">User:</span>{" "}
+              {selectedOrder.user?.name || "Guest"}
+            </p>
+            <p className="mb-2">
+              <span className="font-semibold">Payment:</span>{" "}
+              {selectedOrder.paymentMethod}
+            </p>
+            <p className="mb-2">
+              <span className="font-semibold">Status:</span>{" "}
+              {selectedOrder.status}
+            </p>
+            <p className="mb-4">
+              <span className="font-semibold">Total:</span> ₹
+              {selectedOrder.totalPrice.toFixed(2)}
+            </p>
+
+            <h3 className="text-lg font-semibold mb-2">Items</h3>
+            <ul className="mb-4 space-y-2">
+              {selectedOrder.orderItems.map((i, idx) => (
+                <li key={idx} className="flex justify-between border-b pb-1">
+                  <span>
+                    {i.product?.name} (₹{i.priceAtPurchase})
+                  </span>
+                  <span>x{i.quantity}</span>
+                </li>
+              ))}
+            </ul>
+
+            <h3 className="text-lg font-semibold mb-2">Shipping</h3>
+            <p className="text-sm text-gray-700">
+              {selectedOrder.shippingAddress?.name},{" "}
+              {selectedOrder.shippingAddress?.street},{" "}
+              {selectedOrder.shippingAddress?.apartment},{" "}
+              {selectedOrder.shippingAddress?.city},{" "}
+              {selectedOrder.shippingAddress?.state},{" "}
+              {selectedOrder.shippingAddress?.postalCode},{" "}
+              {selectedOrder.shippingAddress?.country}
+            </p>
+
+            <div className="flex justify-end gap-2 pt-6">
+              <button
+                onClick={() => setSelectedOrder(null)}
+                className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
