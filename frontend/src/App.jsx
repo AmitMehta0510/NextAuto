@@ -10,13 +10,13 @@ function App() {
   return (
     <>
       <Toaster position="top-center" reverseOrder={false} />
-      <AuthProvider>
-        <CartProvider>
+      <CartProvider>
+        <AuthProvider>
           <Navbar /> {/* ⬅️ Always render Navbar */}
           <AppRoutes />
           <Footer /> {/* ⬅️ Always render Footer */}
-        </CartProvider>
-      </AuthProvider>
+        </AuthProvider>
+      </CartProvider>
     </>
   );
 }

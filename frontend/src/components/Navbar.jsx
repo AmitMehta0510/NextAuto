@@ -6,9 +6,16 @@ import { useCart } from "../context/CartContext.jsx";
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
-  const { cart } = useCart();
+  const { cart, clearCart } = useCart(); // get clearCart here
 
   const cartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
+
+  // Updated logout handler
+const handleLogout = () => {
+  clearCart(); // only clear frontend cart
+  logout();    // log out user
+};
+
 
   return (
     <nav className="sticky top-0 z-50 bg-[#001F2E] text-white px-6 py-3 flex justify-between items-center shadow-lg">
@@ -24,17 +31,16 @@ const Navbar = () => {
         </Link>
 
         <Link to="/cart" className="relative flex items-center gap-1 hover:text-cyan-400 transition">
-  <div className="relative">
-    <FiShoppingCart className="text-xl" />
-    {cartCount > 0 && (
-      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
-        {cartCount}
-      </span>
-    )}
-  </div>
-  Cart
-</Link>
-
+          <div className="relative">
+            <FiShoppingCart className="text-xl" />
+            {cartCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
+                {cartCount}
+              </span>
+            )}
+          </div>
+          Cart
+        </Link>
 
         {user ? (
           <>
@@ -52,8 +58,9 @@ const Navbar = () => {
               </Link>
             )}
 
+            {/* Updated logout button */}
             <button
-              onClick={logout}
+              onClick={handleLogout}
               className="ml-2 flex items-center gap-1 bg-cyan-500 hover:bg-cyan-600 px-3 py-1.5 rounded-lg font-semibold transition"
             >
               <FiLogOut /> Logout
