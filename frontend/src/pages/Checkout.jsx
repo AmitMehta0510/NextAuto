@@ -4,7 +4,7 @@ import API from "../utils/api";
 import { useNavigate } from "react-router-dom";
 
 const Checkout = () => {
-  const { cart, clearCart } = useCart();
+  const { cart, clearCart, increaseQuantity, decreaseQuantity } = useCart();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -103,7 +103,24 @@ const Checkout = () => {
                   <h2 className="text-gray-500 font-semibold text-lg">
                     {item.product.name}
                   </h2>
-                  <p className="text-gray-400 text-sm">Qty : {item.quantity}</p>
+                  <div className="flex items-center space-x-3 mt-3">
+                    <button
+                      onClick={() => decreaseQuantity(item.product._id)}
+                      className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+                    >
+                      –
+                    </button>
+                    
+                    <span className="font-medium text-gray-800 dark:text-white">
+                      {item.quantity}
+                    </span>
+                    <button
+                      onClick={() => increaseQuantity(item.product._id)}
+                      className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+                    >
+                      +
+                    </button>
+                  </div>
                   <p className="text-cyan-400 font-semibold">
                     ₹{item.product.price} each
                   </p>
@@ -241,7 +258,11 @@ const Checkout = () => {
                 Items ({cart.reduce((sum, i) => sum + i.quantity, 0)})
               </span>
               <span>
-                ₹{cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0)}
+                ₹
+                {cart.reduce(
+                  (sum, item) => sum + item.product.price * item.quantity,
+                  0
+                )}
               </span>
             </div>
             <div className="flex justify-between mb-2 text-gray-400">
@@ -251,7 +272,11 @@ const Checkout = () => {
             <div className="flex justify-between font-bold text-lg mt-4 border-t border-gray-700 pt-3">
               <span>Total</span>
               <span>
-                ₹{cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0)}
+                ₹
+                {cart.reduce(
+                  (sum, item) => sum + item.product.price * item.quantity,
+                  0
+                )}
               </span>
             </div>
           </div>

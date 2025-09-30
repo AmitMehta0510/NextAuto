@@ -49,16 +49,15 @@ const Profile = () => {
     : "-";
 
   // Role UI element
-  const roleBadge =
-    profile.isAdmin ? (
-      <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-emerald-100 text-emerald-600 text-xs font-bold tracking-wide uppercase">
-        <FiUserCheck className="inline" /> Admin
-      </span>
-    ) : (
-      <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-blue-100 text-blue-600 text-xs font-bold tracking-wide uppercase">
-        <FiUser className="inline" /> User
-      </span>
-    );
+  const roleBadge = profile.isAdmin ? (
+    <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-emerald-100 text-emerald-600 text-xs font-bold tracking-wide uppercase">
+      <FiUserCheck className="inline" /> Admin
+    </span>
+  ) : (
+    <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-blue-100 text-blue-600 text-xs font-bold tracking-wide uppercase">
+      <FiUser className="inline" /> User
+    </span>
+  );
 
   // Active status badge
   const statusBadge = profile.isActive ? (
@@ -72,56 +71,67 @@ const Profile = () => {
   );
 
   return (
-    <div className="max-w-2xl mx-auto mt-12 mb-16 shadow-xl rounded-3xl bg-white overflow-hidden animate-fadein">
+    <div className="max-w-2xl mx-auto mt-12 mb-16 rounded-3xl bg-[#001F2E]/80 backdrop-blur-md shadow-2xl overflow-hidden animate-fadein border border-cyan-900/40">
       {/* Header gradient */}
-      <div className="bg-gradient-to-br from-cyan-500 to-blue-600 h-40 relative flex items-end">
-        <div className="absolute left-1/2 -bottom-10 transform -translate-x-1/2 shadow-lg">
-          <div className="w-24 h-24 rounded-full border-4 border-white bg-cyan-100 flex items-center justify-center text-cyan-600 text-5xl font-extrabold">
+      <div className="bg-gradient-to-r from-cyan-600/80 to-emerald-600/80 h-40 relative flex items-end">
+        <div className="absolute left-1/2 -bottom-12 transform -translate-x-1/2 shadow-xl">
+          <div className="w-28 h-28 rounded-full border-4 border-cyan-400 bg-gradient-to-br from-cyan-100 to-emerald-100 flex items-center justify-center text-cyan-700 text-5xl font-extrabold shadow-lg">
             {getInitial(profile.name)}
           </div>
         </div>
       </div>
 
       {/* Profile info */}
-      <div className="pt-16 pb-8 px-8 text-center bg-white">
-        <h1 className="text-3xl font-extrabold text-gray-900 flex justify-center items-center gap-2">
+      <div className="pt-20 pb-10 px-8 text-center text-gray-200">
+        <h1 className="text-3xl font-extrabold flex justify-center items-center gap-3">
           {profile.name}
           {roleBadge}
         </h1>
-        <div className="flex justify-center items-center gap-2 mt-4">
+
+        {/* Status */}
+        <div className="flex justify-center items-center gap-2 mt-3">
           {statusBadge}
         </div>
 
-        <div className="mt-6 flex flex-col gap-4 items-center text-gray-700">
+        {/* Info */}
+        <div className="mt-8 flex flex-col gap-5 items-center text-gray-300">
           <div className="flex items-center gap-2">
-            <FiMail className="text-cyan-500" />
+            <FiMail className="text-cyan-400" />
             <span>{profile.email}</span>
           </div>
           <div className="flex items-center gap-2">
-            <FiPhone className="text-emerald-500" />
-            <span>{profile.phone ? profile.phone : <span className="text-gray-400">Not Provided</span>}</span>
+            <FiPhone className="text-emerald-400" />
+            <span>
+              {profile.phone ? (
+                profile.phone
+              ) : (
+                <span className="text-gray-500 italic">Not Provided</span>
+              )}
+            </span>
           </div>
           <div className="flex items-center gap-2">
             <FiCalendar className="text-blue-400" />
             <span>
               Joined{" "}
-              <span className="font-semibold text-gray-900">{formattedDate}</span>
+              <span className="font-semibold text-gray-100">
+                {formattedDate}
+              </span>
             </span>
           </div>
         </div>
 
         {/* Actions */}
-        <div className="mt-8 flex justify-center gap-6 flex-wrap">
+        <div className="mt-10 flex justify-center gap-6 flex-wrap">
           <button
             onClick={() => navigate("/orders")}
-            className="inline-flex items-center gap-2 bg-cyan-500 hover:bg-cyan-600 text-white px-6 py-2 rounded-lg font-medium shadow-md transition"
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-600 hover:to-emerald-600 text-white px-6 py-2 rounded-xl font-semibold shadow-md transition"
             aria-label="View My Orders"
           >
             <PiUserFill size={18} /> My Orders
           </button>
           <button
             onClick={() => navigate("/profile/edit")}
-            className="inline-flex items-center gap-2 bg-gray-800 hover:bg-gray-700 text-white px-6 py-2 rounded-lg font-medium shadow-md transition"
+            className="inline-flex items-center gap-2 bg-gray-700 hover:bg-gray-600 text-white px-6 py-2 rounded-xl font-semibold shadow-md transition"
             aria-label="Edit Profile"
           >
             <FiEdit2 size={18} /> Edit Profile

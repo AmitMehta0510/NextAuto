@@ -9,7 +9,7 @@ import Footer from "../src/components/Footer.jsx"; // ⬅️ import your Footer
 function App() {
   return (
     <>
-      <Toaster position="top-right" reverseOrder={false} />
+      <Toaster position="top-center" reverseOrder={false} />
       <AuthProvider>
         <CartProvider>
           <Navbar /> {/* ⬅️ Always render Navbar */}
