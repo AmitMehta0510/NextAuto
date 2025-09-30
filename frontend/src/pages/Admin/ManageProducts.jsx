@@ -74,7 +74,8 @@ const ManageProducts = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this product?")) return;
+    if (!window.confirm("Are you sure you want to delete this product?"))
+      return;
     await API.delete(`/admin/products/${id}`);
     fetchProducts();
   };
@@ -84,8 +85,12 @@ const ManageProducts = () => {
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-gray-900">Manage Products</h1>
-          <p className="text-gray-500 mt-1">Add, edit, and manage your product inventory</p>
+          <h1 className="text-3xl font-extrabold tracking-tight text-gray-900">
+            Manage Products
+          </h1>
+          <p className="text-gray-500 mt-1">
+            Add, edit, and manage your product inventory
+          </p>
         </div>
         <button
           onClick={() => {
@@ -110,7 +115,7 @@ const ManageProducts = () => {
               <th className="px-4 py-3 font-medium">Category</th>
               <th className="px-4 py-3 font-medium">Price</th>
               <th className="px-4 py-3 font-medium">Stock</th>
-              <th className="px-4 py-3 font-medium">Sold</th>
+              <th className="px-4 py-3 font-medium">TotalSold</th>
               <th className="px-4 py-3 font-medium">Rating</th>
               <th className="px-4 py-3 font-medium">Status</th>
               <th className="px-4 py-3 font-medium">Actions</th>
@@ -134,15 +139,24 @@ const ManageProducts = () => {
                   />
                 </td>
                 <td className="px-4 py-3 font-semibold">{p.name}</td>
-                <td className="px-4 py-3 truncate max-w-[220px] text-gray-600">{p.description}</td>
+                <td className="px-4 py-3 truncate max-w-[220px] text-gray-600">
+                  {p.description}
+                </td>
                 <td className="px-4 py-3">{p.category}</td>
                 <td className="px-4 py-3 font-semibold">₹{p.price}</td>
                 <td className="px-4 py-3">{p.stock}</td>
                 <td className="px-4 py-3">{p.totalSold || 0}</td>
-                <td className="px-4 py-3">{Number(p.rating || 0).toFixed(1)} <span className="text-yellow-400">★</span></td>
+                <td className="px-4 py-3">
+                  {Number(p.rating || 0).toFixed(1)}{" "}
+                  <span className="text-yellow-400">★</span>
+                </td>
                 <td className="px-4 py-3">
                   {p.statusBadge ? (
-                    <span className={`px-2 py-1 text-xs font-medium rounded-full ${badgeShade(p.statusBadge)}`}>
+                    <span
+                      className={`px-2 py-1 text-xs font-medium rounded-full ${badgeShade(
+                        p.statusBadge
+                      )}`}
+                    >
                       {p.statusBadge}
                     </span>
                   ) : (
@@ -161,7 +175,10 @@ const ManageProducts = () => {
                         className="p-1.5 hover:bg-gray-100 rounded group"
                         title="Edit"
                       >
-                        <Pencil size={18} className="text-blue-600 group-hover:text-blue-800" />
+                        <Pencil
+                          size={18}
+                          className="text-blue-600 group-hover:text-blue-800"
+                        />
                         <span className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 pointer-events-none group-hover:opacity-100 transition bg-gray-900 text-white text-xs px-2 py-1 rounded shadow z-10 whitespace-nowrap">
                           Edit
                         </span>
@@ -173,7 +190,10 @@ const ManageProducts = () => {
                         className="p-1.5 hover:bg-gray-100 rounded group"
                         title="Delete"
                       >
-                        <Trash2 size={18} className="text-red-600 group-hover:text-red-800" />
+                        <Trash2
+                          size={18}
+                          className="text-red-600 group-hover:text-red-800"
+                        />
                         <span className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 pointer-events-none group-hover:opacity-100 transition bg-gray-900 text-white text-xs px-2 py-1 rounded shadow z-10 whitespace-nowrap">
                           Delete
                         </span>
@@ -187,11 +207,25 @@ const ManageProducts = () => {
         </table>
       </div>
 
-      {/* Add/Edit Form Drawer */}
+      {/* Add/Edit Form Modal */}
       {showForm && (
-        <div className="fixed inset-0 flex justify-end bg-black/40 z-40">
-          <div className="w-full sm:w-[450px] bg-white p-8 shadow-2xl overflow-y-auto rounded-l-xl relative">
-            <h2 className="text-xl font-bold mb-4">{editing ? "Edit Product" : "Add New Product"}</h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl relative max-h-[90vh] overflow-y-auto p-8">
+            {/* Close Button */}
+            <button
+              onClick={() => {
+                setShowForm(false);
+                setEditing(null);
+              }}
+              className="absolute top-4 right-4  hover:text-gray-600"
+            >
+              ❌
+            </button>
+
+            <h2 className="text-2xl font-bold mb-6 text-gray-900">
+              {editing ? "Edit Product" : "Add New Product"}
+            </h2>
+
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="space-y-2">
                 <label className="text-sm font-medium">Name</label>
@@ -208,11 +242,15 @@ const ManageProducts = () => {
                 <textarea
                   placeholder="Product short description"
                   value={form.description}
-                  onChange={(e) => setForm({ ...form, description: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, description: e.target.value })
+                  }
                   className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                  rows={2}
+                  rows={3}
                 />
               </div>
+
+              {/* Price & Stock */}
               <div className="flex gap-4">
                 <div className="w-1/2 space-y-2">
                   <label className="text-sm font-medium">Price</label>
@@ -221,7 +259,9 @@ const ManageProducts = () => {
                     type="number"
                     min={0}
                     value={form.price}
-                    onChange={(e) => setForm({ ...form, price: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, price: e.target.value })
+                    }
                     className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     required
                   />
@@ -233,25 +273,37 @@ const ManageProducts = () => {
                     type="number"
                     min={0}
                     value={form.stock}
-                    onChange={(e) => setForm({ ...form, stock: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, stock: e.target.value })
+                    }
                     className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   />
                 </div>
               </div>
+
+              {/* Category */}
               <div className="space-y-2">
                 <label className="text-sm font-medium">Category</label>
                 <select
                   value={form.category}
-                  onChange={(e) => setForm({ ...form, category: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, category: e.target.value })
+                  }
                   className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   required
                 >
-                  <option value="" disabled>Select category</option>
-                  {CATEGORY_OPTIONS.map((cat) =>
-                    <option key={cat} value={cat}>{cat}</option>
-                  )}
+                  <option value="" disabled>
+                    Select category
+                  </option>
+                  {CATEGORY_OPTIONS.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
                 </select>
               </div>
+
+              {/* Image */}
               <div className="space-y-2">
                 <label className="text-sm font-medium">Image URL</label>
                 <input
@@ -261,8 +313,12 @@ const ManageProducts = () => {
                   className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 />
               </div>
+
+              {/* Tags */}
               <div className="space-y-2">
-                <label className="text-sm font-medium">Tags <span className="text-gray-400">(comma separated)</span></label>
+                <label className="text-sm font-medium">
+                  Tags <span className="text-gray-400">(comma separated)</span>
+                </label>
                 <input
                   placeholder="e.g. flagship, android"
                   value={form.tags}
@@ -270,31 +326,40 @@ const ManageProducts = () => {
                   className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 />
               </div>
+
+              {/* Status Badge */}
               <div className="space-y-2">
-                <label className="text-sm font-medium">Status Badge <span className="text-gray-400">(e.g. New, Premium)</span></label>
+                <label className="text-sm font-medium">
+                  Status Badge{" "}
+                  <span className="text-gray-400">(e.g. New, Premium)</span>
+                </label>
                 <input
                   placeholder="e.g. New, Premium"
                   value={form.statusBadge}
-                  onChange={(e) => setForm({ ...form, statusBadge: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, statusBadge: e.target.value })
+                  }
                   className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 />
               </div>
-              <div className="flex justify-end gap-3 mt-6">
+
+              {/* Buttons */}
+              <div className="flex justify-end gap-3 mt-8">
                 <button
                   type="button"
                   onClick={() => {
                     setShowForm(false);
                     setEditing(null);
                   }}
-                  className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 font-medium"
+                  className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 font-medium"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 font-semibold"
+                  className="px-5 py-2.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 font-semibold shadow-md"
                 >
-                  {editing ? "Update" : "Create"}
+                  {editing ? "Update Product" : "Create Product"}
                 </button>
               </div>
             </form>
