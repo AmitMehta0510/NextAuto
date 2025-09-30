@@ -3,32 +3,13 @@ import { useCart } from "../context/CartContext";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import AuthContext from "../context/AuthContext.jsx";
+import { ShoppingCart, Trash2 } from "lucide-react";
 
 const Cart = () => {
   const { cart, removeFromCart, increaseQuantity, decreaseQuantity } =
     useCart();
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
-
-  if (!cart.length) {
-    return (
-      <div className="flex flex-col justify-center items-center min-h-[400px] text-gray-500 dark:text-gray-500">
-        <img
-          src="https://cdn-icons-png.flaticon.com/512/2038/2038854.png"
-          alt="Empty Cart"
-          className="w-32 h-32 mb-6 opacity-80"
-        />
-        <h2 className="text-2xl font-semibold mb-2">Your cart is empty 🛒</h2>
-        <p className="mb-6">Looks like you haven’t added anything yet.</p>
-        <button
-          onClick={() => navigate("/")}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition font-medium shadow-md"
-        >
-          Shop Now
-        </button>
-      </div>
-    );
-  }
 
   const totalPrice = cart.reduce(
     (acc, item) => acc + (item.product?.price || 0) * item.quantity,
@@ -46,6 +27,29 @@ const Cart = () => {
     navigate("/checkout");
   };
 
+  if (!cart.length) {
+    return (
+      <div className="flex justify-center items-center min-h-[calc(100vh-120px)] px-4">
+        <div className="bg-white dark:bg-gray-800 shadow-xl rounded-2xl p-8 max-w-md w-full text-center border border-gray-200 dark:border-gray-700">
+          <ShoppingCart className="mx-auto w-16 h-16 text-gray-400 mb-4" />
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">
+            Your Cart is Empty 🛒
+          </h2>
+          <p className="text-gray-500 dark:text-gray-300 mt-2">
+            Looks like you haven’t added anything yet. Start exploring our
+            products!
+          </p>
+          <button
+            onClick={() => navigate("/")}
+            className="mt-6 inline-block bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-6 py-3 rounded-full shadow-md hover:opacity-90 transition"
+          >
+            Shop Now
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-7xl mx-auto p-6">
       <h1 className="text-3xl text-center font-bold mb-10 text-gray-900 dark:text-white">
@@ -58,7 +62,7 @@ const Cart = () => {
           {cart.map((item) => (
             <div
               key={item.product._id}
-              className="flex items-center bg-white dark:bg-[#012A3F] rounded-2xl shadow-md hover:shadow-xl transition p-5"
+              className="flex items-center bg-white dark:bg-[#012A3F] rounded-2xl shadow-md hover:shadow-lg transition p-5"
             >
               {/* Image */}
               <img
@@ -108,9 +112,9 @@ const Cart = () => {
                       icon: "❌",
                     });
                   }}
-                  className="text-red-500 text-sm mt-2 hover:underline"
+                  className="flex items-center gap-1 text-red-500 text-sm mt-2 hover:underline"
                 >
-                  Remove
+                  <Trash2 size={14} /> Remove
                 </button>
               </div>
             </div>
@@ -118,8 +122,8 @@ const Cart = () => {
         </div>
 
         {/* Summary */}
-        <div className="bg-white dark:bg-[#001F2E] rounded-2xl shadow-lg p-6 h-fit sticky top-20">
-          <h2 className="text-xl font-semibold mb-6 text-gray-800 dark:text-white">
+        <div className="bg-white dark:bg-[#001F2E] rounded-2xl shadow-lg p-6 h-fit sticky top-20 border border-gray-200 dark:border-gray-700">
+          <h2 className="text-xl font-bold mb-6 text-gray-800 dark:text-white">
             Order Summary
           </h2>
 
@@ -129,15 +133,15 @@ const Cart = () => {
           </div>
           <div className="flex justify-between mb-6 text-gray-700 dark:text-gray-300">
             <span>Total Price</span>
-            <span className="font-bold text-xl text-blue-600">
+            <span className="font-bold text-xl text-cyan-600">
               ₹{totalPrice}
             </span>
           </div>
 
-          {/* ✅ Button instead of Link */}
+          {/* ✅ Button */}
           <button
             onClick={handleCheckout}
-            className="block w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg text-center font-medium shadow-md transition"
+            className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white py-3 rounded-lg text-center font-semibold shadow-md hover:opacity-90 transition"
           >
             Proceed to Checkout
           </button>
