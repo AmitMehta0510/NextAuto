@@ -5,11 +5,16 @@ export const getCart = async (req, res, next) => {
   try {
     let cart = await Cart.findOne({ user: req.user._id }).populate("items.product");
     if (!cart) return res.json({ items: [] });
+
+    // Remove items where the product no longer exists
+    cart.items = cart.items.filter(item => item.product != null);
+
     res.json(cart);
   } catch (err) {
     next(err);
   }
 };
+
 
 export const addToCart = async (req, res, next) => {
   try {

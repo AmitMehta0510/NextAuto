@@ -73,12 +73,18 @@ const ManageProducts = () => {
     } catch {}
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this product?"))
-      return;
+const handleDelete = async (id) => {
+  if (!window.confirm("Are you sure you want to delete this product?")) return;
+  try {
     await API.delete(`/admin/products/${id}`);
     fetchProducts();
-  };
+    // Refresh cart count (optional)
+    await API.get("/cart"); 
+  } catch (err) {
+    console.error("Failed to delete product", err);
+  }
+};
+
 
   return (
     <div className="px-8 py-10 bg-neutral-50 min-h-screen w-full">

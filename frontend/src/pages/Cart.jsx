@@ -11,11 +11,14 @@ const Cart = () => {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  const totalPrice = cart.reduce(
-    (acc, item) => acc + (item.product?.price || 0) * item.quantity,
+  const validCart = cart.filter((item) => item.product);
+
+  const totalPrice = validCart.reduce(
+    (acc, item) => acc + (item.product.price || 0) * item.quantity,
     0
   );
-  const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
+
+  const totalItems = validCart.reduce((acc, item) => acc + item.quantity, 0);
 
   // ✅ Checkout handler
   const handleCheckout = () => {
@@ -27,7 +30,7 @@ const Cart = () => {
     navigate("/checkout");
   };
 
-  if (!cart.length) {
+  if (!validCart.length) {
     return (
       <div className="flex justify-center items-center min-h-[calc(100vh-120px)] px-4">
         <div className="bg-white dark:bg-gray-800 shadow-xl rounded-2xl p-8 max-w-md w-full text-center border border-gray-200 dark:border-gray-700">
@@ -59,9 +62,9 @@ const Cart = () => {
       <div className="grid md:grid-cols-3 gap-8">
         {/* Cart Items */}
         <div className="md:col-span-2 space-y-6">
-          {cart.map((item) => (
+          {validCart.map((item, index) => (
             <div
-              key={item.product._id}
+              key={item._id || `${item.product?._id}-${index}`} // ✅ unique, safe fallback
               className="flex items-center bg-white dark:bg-[#012A3F] rounded-2xl shadow-md hover:shadow-lg transition p-5"
             >
               {/* Image */}

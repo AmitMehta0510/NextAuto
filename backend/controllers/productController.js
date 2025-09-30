@@ -1,4 +1,5 @@
 import Product from "../models/Product.js";
+import Cart from "../models/Cart.js";
 
 // ====================== Customer ======================
 
@@ -56,8 +57,25 @@ export const deleteProduct = async (req, res) => {
   try {
     const product = await Product.findByIdAndDelete(req.params.id);
     if (!product) return res.status(404).json({ message: "Product not found" });
-    res.json({ message: "Product deleted" });
+
+    // Remove the deleted product from all carts
+    const carts = await Cart.find({ "items.product": product._id });
+
+    for (let cart of carts) {
+      // Remove items and calculate quantity removed (for cart count if needed)
+      const removedItems = cart.items.filter(
+        (item) => item.product.toString() === product._id.toString()
+      );
+      cart.items = cart.items.filter(
+        (item) => item.product.toString() !== product._id.toString()
+      );
+
+      await cart.save();
+    }
+
+    res.json({ message: "Product deleted and removed from all user carts" });
   } catch (error) {
+    console.error("Delete Product Error:", error);
     res.status(500).json({ message: "Failed to delete product" });
   }
 };
