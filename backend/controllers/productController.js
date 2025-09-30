@@ -28,14 +28,15 @@ export const getProductById = async (req, res) => {
 // POST /api/admin/products
 export const createProduct = async (req, res) => {
   try {
-    const { name, price, description, stock } = req.body;
-    const product = new Product({ name, price, description, stock });
+    // Save all fields from req.body (assuming security/middleware/input validation as needed)
+    const product = new Product(req.body);
     const savedProduct = await product.save();
     res.status(201).json(savedProduct);
   } catch (error) {
     res.status(500).json({ message: "Failed to create product" });
   }
 };
+
 
 // PUT /api/admin/products/:id
 export const updateProduct = async (req, res) => {
