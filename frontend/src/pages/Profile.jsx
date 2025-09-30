@@ -1,3 +1,5 @@
+// frontend/src/pages/Profile.jsx
+
 import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../utils/api";
@@ -71,72 +73,71 @@ const Profile = () => {
   );
 
   return (
-    <div className="max-w-2xl mx-auto mt-12 mb-16 rounded-3xl bg-[#001F2E]/80 backdrop-blur-md shadow-2xl overflow-hidden animate-fadein border border-cyan-900/40">
-      {/* Header gradient */}
-      <div className="bg-gradient-to-r from-cyan-600/80 to-emerald-600/80 h-40 relative flex items-end">
-        <div className="absolute left-1/2 -bottom-12 transform -translate-x-1/2 shadow-xl">
-          <div className="w-28 h-28 rounded-full border-4 border-cyan-400 bg-gradient-to-br from-cyan-100 to-emerald-100 flex items-center justify-center text-cyan-700 text-5xl font-extrabold shadow-lg">
-            {getInitial(profile.name)}
+    <div className="max-w-lg mx-auto mt-16 mb-16 shadow-2xl rounded-3xl overflow-hidden border border-cyan-900/40 bg-[#071E2F] animate-fadein">
+
+      {/* Profile Header */}
+      <div className="flex flex-col md:flex-row items-center gap-8 px-8 py-8 bg-gradient-to-r from-cyan-600/90 to-emerald-600/90">
+        <div className="w-24 h-24 rounded-full bg-white border-4 border-cyan-400 flex items-center justify-center text-cyan-700 text-5xl font-extrabold shadow-xl -mt-5 md:mt-0">
+          {getInitial(profile.name)}
+        </div>
+        <div className="flex-1 flex flex-col items-center md:items-start">
+          <div className="flex flex-row gap-3 items-center mb-2">
+            <span className="text-2xl font-bold text-gray-100">{profile.name}</span>
+            {roleBadge}
+          </div>
+          <div>{statusBadge}</div>
+        </div>
+      </div>
+
+      {/* Profile Info Section */}
+      <div className="bg-[#001F2E] px-8 py-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center gap-2">
+              <FiMail className="text-cyan-400" />
+              <span className="text-gray-200">{profile.email}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <FiPhone className="text-emerald-400" />
+              <span className="text-white font-semibold">
+                {profile.phone ? (
+                  profile.phone
+                ) : (
+                  <span className="text-gray-500 italic">Not Provided</span>
+                )}
+              </span>
+            </div>
+          </div>
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center gap-2">
+              <FiCalendar className="text-blue-400" />
+              <span className="text-white font-semibold">
+                Joined{" "}
+                <span className="font-semibold text-gray-100">
+                  {formattedDate}
+                </span>
+              </span>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Profile info */}
-      <div className="pt-20 pb-10 px-8 text-center text-gray-200">
-        <h1 className="text-3xl font-extrabold flex justify-center items-center gap-3">
-          {profile.name}
-          {roleBadge}
-        </h1>
-
-        {/* Status */}
-        <div className="flex justify-center items-center gap-2 mt-3">
-          {statusBadge}
-        </div>
-
-        {/* Info */}
-        <div className="mt-8 flex flex-col gap-5 items-center text-gray-300">
-          <div className="flex items-center gap-2">
-            <FiMail className="text-cyan-400" />
-            <span>{profile.email}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <FiPhone className="text-emerald-400" />
-            <span>
-              {profile.phone ? (
-                profile.phone
-              ) : (
-                <span className="text-gray-500 italic">Not Provided</span>
-              )}
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <FiCalendar className="text-blue-400" />
-            <span>
-              Joined{" "}
-              <span className="font-semibold text-gray-100">
-                {formattedDate}
-              </span>
-            </span>
-          </div>
-        </div>
-
-        {/* Actions */}
-        <div className="mt-10 flex justify-center gap-6 flex-wrap">
-          <button
-            onClick={() => navigate("/orders")}
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-600 hover:to-emerald-600 text-white px-6 py-2 rounded-xl font-semibold shadow-md transition"
-            aria-label="View My Orders"
-          >
-            <PiUserFill size={18} /> My Orders
-          </button>
-          <button
-            onClick={() => navigate("/profile/edit")}
-            className="inline-flex items-center gap-2 bg-gray-700 hover:bg-gray-600 text-white px-6 py-2 rounded-xl font-semibold shadow-md transition"
-            aria-label="Edit Profile"
-          >
-            <FiEdit2 size={18} /> Edit Profile
-          </button>
-        </div>
+      {/* Actions */}
+      <div className="flex justify-center gap-8 py-8 bg-[#001828] border-t border-cyan-900/20">
+        <button
+          onClick={() => navigate("/orders")}
+          className="flex-grow inline-flex items-center gap-2 px-6 py-3 ml-4 rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-600 hover:to-emerald-600 text-white font-semibold shadow-md transition"
+          aria-label="View My Orders"
+        >
+          <PiUserFill size={18} /> My Orders
+        </button>
+        <button
+          onClick={() => navigate("/profile/edit")}
+          className="flex-grow inline-flex items-center gap-2 px-6 py-3 mr-4 rounded-xl bg-gray-700 hover:bg-gray-600 text-white font-semibold shadow-md transition"
+          aria-label="Edit Profile"
+        >
+          <FiEdit2 size={18} /> Edit Profile
+        </button>
       </div>
     </div>
   );
