@@ -1,11 +1,16 @@
 import React, { useContext, useState } from "react";
 import AuthContext from "../context/AuthContext.jsx";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 
 const Login = () => {
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
+  const location = useLocation();
   const [error, setError] = useState(null);
+
+  // Get redirect path from state (default: home "/")
+  const from = location.state?.from || "/";
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const userData = {
@@ -14,9 +19,9 @@ const Login = () => {
     };
     try {
       await login(userData);
-      navigate("/"); // after login
+      navigate(from, { replace: true }); // ✅ redirect back to intended page
     } catch (err) {
-      alert("Login failed");
+      setError("Login failed. Please try again.");
     }
   };
 
@@ -63,29 +68,12 @@ const Login = () => {
           </button>
         </form>
 
-        {/* Divider */}
-        {/* <div className="flex items-center gap-4 my-6">
-          <div className="flex-1 h-px bg-gray-700"></div>
-          <span className="text-sm text-gray-400">Or continue with</span>
-          <div className="flex-1 h-px bg-gray-700"></div>
-        </div> */}
-
-        {/* Social Logins */}
-        {/* <div className="flex justify-center gap-4">
-          <button className="w-10 h-10 rounded-full bg-cyan-500 flex items-center justify-center hover:bg-cyan-600 transition">
-            <FaGoogle className="text-white text-lg" />
-          </button>
-          <button className="w-10 h-10 rounded-full bg-cyan-500 flex items-center justify-center hover:bg-cyan-600 transition">
-            <FaFacebookF className="text-white text-lg" />
-          </button>
-        </div> */}
-
         {/* Footer */}
         <p className="text-sm text-gray-400 mt-6 text-center">
           Don’t have an account?{" "}
-          <a href="/register" className="text-cyan-400 hover:underline">
+          <Link to="/register" className="text-cyan-400 hover:underline">
             Register Now!
-          </a>
+          </Link>
         </p>
       </div>
     </section>

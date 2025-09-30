@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import API from "../utils/api";
 import { useCart } from "../context/CartContext";
+
 import {
   FaStar,
   FaStarHalfAlt,
@@ -9,6 +10,8 @@ import {
   FaCheckCircle,
 } from "react-icons/fa";
 import toast from "react-hot-toast";
+import { useContext } from "react";
+import AuthContext from "../context/AuthContext.jsx";
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -16,6 +19,8 @@ const ProductDetails = () => {
   const [product, setProduct] = useState(null);
   const { addToCart } = useCart();
   const [activeTab, setActiveTab] = useState("description");
+
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
     API.get(`/products/${id}`).then((res) => setProduct(res.data));
@@ -38,6 +43,11 @@ const ProductDetails = () => {
   };
 
   const handleBuyNow = () => {
+    if (!user) {
+      toast.error("Please login to proceed to checkout");
+      navigate("/login", { state: { from: "/checkout" } });
+      return;
+    }
     addToCart(product);
     navigate("/checkout");
   };

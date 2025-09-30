@@ -1,10 +1,14 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useCart } from "../context/CartContext";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import AuthContext from "../context/AuthContext.jsx";
 
 const Cart = () => {
-  const { cart, removeFromCart, increaseQuantity, decreaseQuantity } = useCart();
+  const { cart, removeFromCart, increaseQuantity, decreaseQuantity } =
+    useCart();
+  const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   if (!cart.length) {
     return (
@@ -16,12 +20,12 @@ const Cart = () => {
         />
         <h2 className="text-2xl font-semibold mb-2">Your cart is empty 🛒</h2>
         <p className="mb-6">Looks like you haven’t added anything yet.</p>
-        <Link
-          to="/"
+        <button
+          onClick={() => navigate("/")}
           className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition font-medium shadow-md"
         >
           Shop Now
-        </Link>
+        </button>
       </div>
     );
   }
@@ -31,6 +35,16 @@ const Cart = () => {
     0
   );
   const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
+
+  // ✅ Checkout handler
+  const handleCheckout = () => {
+    if (!user) {
+      toast.error("Please login to proceed to checkout");
+      navigate("/login", { state: { from: "/checkout" } });
+      return;
+    }
+    navigate("/checkout");
+  };
 
   return (
     <div className="max-w-7xl mx-auto p-6">
@@ -120,12 +134,13 @@ const Cart = () => {
             </span>
           </div>
 
-          <Link
-            to="/checkout"
+          {/* ✅ Button instead of Link */}
+          <button
+            onClick={handleCheckout}
             className="block w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg text-center font-medium shadow-md transition"
           >
             Proceed to Checkout
-          </Link>
+          </button>
         </div>
       </div>
     </div>
