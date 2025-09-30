@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../utils/api";
 import AuthContext from "../context/AuthContext.jsx";
+import { FiX } from "react-icons/fi";
 
 const EditProfile = () => {
   const { user, setUser } = useContext(AuthContext);
@@ -45,8 +46,18 @@ const EditProfile = () => {
   };
 
   return (
-    <div className="max-w-lg mx-auto mt-10 bg-[#001F2E] text-white rounded-2xl shadow-lg p-8">
+    <div className="max-w-lg mx-auto mt-10 relative bg-[#001F2E] text-white rounded-2xl shadow-xl p-8 animate-fadein">
+      {/* 🔹 Close button */}
+      <button
+        onClick={() => navigate("/profile")}
+        className="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition"
+        aria-label="Close Edit Profile"
+      >
+        <FiX size={24} />
+      </button>
+
       <h1 className="text-2xl font-bold mb-6 text-center">Edit Profile</h1>
+
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
           <label className="block text-sm font-medium">Name</label>
@@ -82,7 +93,9 @@ const EditProfile = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium">Password (optional)</label>
+          <label className="block text-sm font-medium">
+            Password (optional)
+          </label>
           <input
             type="password"
             name="password"
