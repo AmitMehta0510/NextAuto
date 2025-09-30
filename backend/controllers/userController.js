@@ -152,14 +152,66 @@ export const promoteUserToAdmin = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.id);
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    if (user.isAdmin) {
+      return res.status(400).json({ message: "User is already an admin" });
     }
 
     user.isAdmin = true;
     await user.save();
 
     res.json({ message: "User promoted to admin" });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// @desc    Demote user to normal (Admin only)
+// @route   PUT /api/admin/users/:id/demote
+// @access  Private/Admin
+export const demoteUserToNormal = async (req, res, next) => {
+  try {
+    // Prevent self-demotion
+    if (req.user._id.toString() === req.params.id) {
+      return res.status(400).json({ message: "You cannot demote yourself" });
+    }
+
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    if (!user.isAdmin) {
+      return res.status(400).json({ message: "User is already not an admin" });
+    }
+
+    user.isAdmin = false;
+    await user.save();
+
+    res.json({ message: "User demoted to normal user" });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const updateUser = async (req, res, next) => {
+  try {
+    // Prevent self-deactivation
+    if (req.user._id.toString() === req.params.id && req.body.isActive === false) {
+      return res.status(400).json({ message: "You cannot deactivate yourself" });
+    }
+
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    user.name = req.body.name || user.name;
+    user.email = req.body.email || user.email;
+    user.phone = req.body.phone || user.phone;
+
+    if (req.body.isAdmin !== undefined) user.isAdmin = req.body.isAdmin;
+    if (req.body.isActive !== undefined) user.isActive = req.body.isActive;
+
+    const updatedUser = await user.save();
+    res.json(updatedUser);
   } catch (err) {
     next(err);
   }
@@ -180,24 +232,4 @@ export const createUser = async (req, res, next) => {
   }
 };
 
-export const updateUser = async (req, res, next) => {
-  try {
-    const user = await User.findById(req.params.id);
-    if (!user) return res.status(404).json({ message: "User not found" });
 
-    user.name = req.body.name || user.name;
-    user.email = req.body.email || user.email;
-    user.phone = req.body.phone || user.phone; // Ensure phone gets updated
-    if (req.body.isAdmin !== undefined) {
-      user.isAdmin = req.body.isAdmin;
-    }
-    if (req.body.isActive !== undefined) {
-      user.isActive = req.body.isActive;
-    }
-
-    const updatedUser = await user.save();
-    res.json(updatedUser);
-  } catch (err) {
-    next(err);
-  }
-};

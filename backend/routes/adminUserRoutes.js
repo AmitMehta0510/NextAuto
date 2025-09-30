@@ -1,7 +1,6 @@
 import express from "express";
 import {
   getAllUsers,
-  getUserProfile,
   updateUser,
   deleteUser,
   createUser,
@@ -10,7 +9,6 @@ import { protect, adminOnly } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// Admin user management
 router
   .route("/")
   .get(protect, adminOnly, getAllUsers)
@@ -18,8 +16,7 @@ router
 
 router
   .route("/:id")
-  .get(protect, adminOnly, getUserProfile)
-  .put(protect, adminOnly, updateUser)
+  .put(protect, adminOnly, updateUser)   // handles activate/deactivate
   .delete(protect, adminOnly, deleteUser);
 
 export default router;

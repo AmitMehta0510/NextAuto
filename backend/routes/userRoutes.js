@@ -4,25 +4,23 @@ import {
   loginUser,
   getUserProfile,
   updateUserProfile,
-  getAllUsers,
-  deleteUser,
   promoteUserToAdmin,
+  demoteUserToNormal,
 } from "../controllers/userController.js";
 import { protect, adminOnly } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// ------------------- Public Routes -------------------
+// Public
 router.post("/register", registerUser);
 router.post("/login", loginUser);
 
-// ------------------- Private Routes -------------------
+// Private
 router.get("/profile", protect, getUserProfile);
 router.put("/profile", protect, updateUserProfile);
 
-// ------------------- Admin Routes -------------------
-router.get("/admin/users", protect, adminOnly, getAllUsers);
-router.delete("/admin/users/:id", protect, adminOnly, deleteUser);
+// Admin
 router.put("/admin/users/:id/promote", protect, adminOnly, promoteUserToAdmin);
+router.put("/admin/users/:id/demote", protect, adminOnly, demoteUserToNormal);
 
 export default router;
