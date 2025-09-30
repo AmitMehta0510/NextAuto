@@ -8,6 +8,7 @@ const productSchema = new mongoose.Schema(
     category: { type: String, default: "other" },
     image: { type: String }, // URL to image (Cloudinary/S3/local)
     stock: { type: Number, default: 0 },
+    totalSold: { type: Number, default: 0 },
     tags: [{ type: String }],
     statusBadge: { type: String }, // e.g. "New", "Premium",
     rating: { type: Number, default: 0, min: 0, max: 5 },

@@ -12,7 +12,7 @@ const Cart = () => {
 
   if (!cart.length) {
     return (
-      <div className="flex flex-col justify-center items-center min-h-[400px] text-gray-500 dark:text-gray-300">
+      <div className="flex flex-col justify-center items-center min-h-[400px] text-gray-500 dark:text-gray-500">
         <img
           src="https://cdn-icons-png.flaticon.com/512/2038/2038854.png"
           alt="Empty Cart"

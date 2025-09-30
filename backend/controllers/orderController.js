@@ -1,4 +1,5 @@
 import Order from "../models/Order.js";
+import Product from "../models/Product.js";
 
 // ====================== Customer ======================
 
@@ -13,10 +14,23 @@ export const createOrder = async (req, res) => {
       totalPrice,
       shippingAddress,
       paymentMethod,
-      status: "Pending",
+      status: "Confirmed",
     });
 
+    // Save order first
     const savedOrder = await order.save();
+
+    // 🔥 Update stock and sold count for each product
+    for (const item of orderItems) {
+      const product = await Product.findById(item.product);
+
+      if (product) {
+        product.stock = Math.max(product.stock - item.quantity, 0); // prevent negative
+        product.totalSold = (product.totalSold || 0) + item.quantity;
+        await product.save();
+      }
+    }
+
     res.status(201).json(savedOrder);
   } catch (error) {
     console.error(error);
