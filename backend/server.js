@@ -68,6 +68,3 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
-
-// I want a modern industry ready UI. Admin should be able to filter contacts based on . (Make sure admin can open individual message/contact in a card format, for this we can create a controller and route)
