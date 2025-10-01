@@ -14,15 +14,16 @@ import Orders from "../pages/Orders";
 import Profile from "../pages/Profile";
 import NotFound from "../pages/NotFound";
 import EditProfile from "../pages/EditProfile.jsx";
+import ContactUs from "../components/HomeComponents/ContactUs";
+import ScrollToTop from "../components/common/ScrollToTop.jsx";
+import PrivacyPolicy from "../components/HomeComponents/PrivacyPolicy";
 
 // Admin pages
 import Dashboard from "../pages/Admin/Dashboard";
 import ManageProducts from "../pages/Admin/ManageProducts";
 import ManageOrders from "../pages/Admin/ManageOrders";
 import ManageUsers from "../pages/Admin/ManageUsers";
-import PrivacyPolicy from "../components/HomeComponents/PrivacyPolicy";
-import ContactUs from "../components/HomeComponents/ContactUs";
-import ScrollToTop from "../components/common/ScrollToTop.jsx";
+import ManageContacts from "../pages/Admin/ManageContacts";
 
 const AppRoutes = () => {
   return (
@@ -62,15 +63,12 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
         >
-          <Route path="/admin" element={<Dashboard />} />{" "}
-          {/* changed default admin path */}
-          {/* <Route path="/admin/dashboard" element={<Dashboard />} /> */}
+          <Route path="/admin" element={<Dashboard />} />
           <Route path="/admin/products" element={<ManageProducts />} />
           <Route path="/admin/orders" element={<ManageOrders />} />
           <Route path="/admin/users" element={<ManageUsers />} />
+          <Route path="/admin/contacts" element={<ManageContacts />} />
         </Route>
-
-        {/* 404 */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>

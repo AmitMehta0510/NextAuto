@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import API from "../../utils/api";
 import AuthContext from "../../context/AuthContext.jsx";
 
 import {
@@ -38,14 +39,12 @@ const Dashboard = () => {
         };
 
         const [statsRes, salesRes] = await Promise.all([
-          axios.get("http://localhost:5000/api/admin/stats", config),
-          axios.get("http://localhost:5000/api/admin/reports/sales", config),
+          API.get("/admin/stats", config),
+          API.get("/admin/reports/sales", config),
         ]);
 
         setStats(statsRes.data);
         setSalesData(salesRes.data);
-        console.log("Fetched stats:", statsRes.data);
-        console.log("Fetched sales data:", salesRes.data);
       } catch (err) {
         setError("Failed to load dashboard data. Try again later.");
       } finally {
@@ -101,10 +100,11 @@ const Dashboard = () => {
       </div>
 
       {/* Quick Links */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <QuickLinkCard title="Manage Products" link="/admin/products" />
         <QuickLinkCard title="Manage Orders" link="/admin/orders" />
         <QuickLinkCard title="Manage Users" link="/admin/users" />
+        <QuickLinkCard title="Manage Contacts" link="/admin/contacts" />
       </div>
 
       {/* Charts */}

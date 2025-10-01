@@ -19,6 +19,7 @@ import adminRoutes from "./routes/adminRoutes.js";
 import adminProductRoutes from "./routes/adminProductRoutes.js";
 import adminOrderRoutes from "./routes/adminOrderRoutes.js";
 import adminUserRoutes from "./routes/adminUserRoutes.js";
+import adminContactRoutes from "./routes/adminContactRoutes.js";
 
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 
@@ -56,6 +57,7 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/admin/products", adminProductRoutes);
 app.use("/api/admin/orders", adminOrderRoutes);
 app.use("/api/admin/users", adminUserRoutes);
+app.use("/api/admin/contacts", adminContactRoutes);
 // app.use("/api/admin/reports", )
 
 app.get("/", (_req, res) => res.json({ ok: true, message: "NextAuto API" }));
@@ -66,3 +68,6 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+
+// I want a modern industry ready UI. Admin should be able to filter contacts based on . (Make sure admin can open individual message/contact in a card format, for this we can create a controller and route)
