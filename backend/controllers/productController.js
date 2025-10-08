@@ -58,24 +58,33 @@ export const deleteProduct = async (req, res) => {
     const product = await Product.findByIdAndDelete(req.params.id);
     if (!product) return res.status(404).json({ message: "Product not found" });
 
-    // Remove the deleted product from all carts
+    // Find all carts that contain this product
     const carts = await Cart.find({ "items.product": product._id });
+    let totalRemovedItems = 0;
 
     for (let cart of carts) {
-      // Remove items and calculate quantity removed (for cart count if needed)
+      // Calculate how many items were removed
       const removedItems = cart.items.filter(
         (item) => item.product.toString() === product._id.toString()
       );
+      const removedCount = removedItems.reduce((sum, item) => sum + item.quantity, 0);
+      totalRemovedItems += removedCount;
+
+      // Remove product from cart
       cart.items = cart.items.filter(
         (item) => item.product.toString() !== product._id.toString()
       );
-
       await cart.save();
     }
 
-    res.json({ message: "Product deleted and removed from all user carts" });
+    return res.json({
+      message: "Product deleted and removed from all user carts",
+      removedFromCarts: carts.length,
+      totalRemovedItems,
+    });
   } catch (error) {
     console.error("Delete Product Error:", error);
     res.status(500).json({ message: "Failed to delete product" });
   }
 };
+

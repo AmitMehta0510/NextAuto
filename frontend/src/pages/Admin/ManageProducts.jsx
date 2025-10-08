@@ -76,14 +76,21 @@ const ManageProducts = () => {
 const handleDelete = async (id) => {
   if (!window.confirm("Are you sure you want to delete this product?")) return;
   try {
-    await API.delete(`/admin/products/${id}`);
+    const { data } = await API.delete(`/admin/products/${id}`);
     fetchProducts();
-    // Refresh cart count (optional)
-    await API.get("/cart"); 
+    
+    // Optional feedback for admin
+    console.log(data.message);
+    
+    // Optional: re-fetch cart to sync count in admin UI (if admin has cart too)
+    try {
+      await API.get("/cart");
+    } catch {}
   } catch (err) {
     console.error("Failed to delete product", err);
   }
 };
+
 
 
   return (
