@@ -1,8 +1,9 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 import API from "../utils/api";
 
 const CartContext = createContext();
-
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
 
@@ -15,10 +16,14 @@ export const CartProvider = ({ children }) => {
       console.error("Failed to fetch cart", err);
     }
   };
+  const navigate = useNavigate();
 
   const addToCart = async (product, quantity = 1) => {
     try {
-      const { data } = await API.post("/cart", { productId: product._id, quantity });
+      const { data } = await API.post("/cart", {
+        productId: product._id,
+        quantity,
+      });
       setCart(data.items);
     } catch (err) {
       console.error("Failed to add to cart", err);
@@ -35,15 +40,17 @@ export const CartProvider = ({ children }) => {
   };
 
 const clearCart = async () => {
-  setCart([]); // always clear frontend cart
+  try {
+    await API.delete("/cart");  // clear backend cart
+  } catch (err) {
+    console.error("Failed to clear backend cart", err);
+  }
+  setCart([]);  // clear frontend cart
+};
 
-  // if (user?.token) {
-  //   try {
-  //     await API.delete("/cart");
-  //   } catch (err) {
-  //     console.log("Failed to clear backend cart", err);
-  //   }
-  // }
+// New helper for logout only
+const clearCartFrontend = () => {
+  setCart([]); // only clear local state
 };
 
 
@@ -74,6 +81,7 @@ const clearCart = async () => {
         addToCart,
         removeFromCart,
         clearCart,
+        clearCartFrontend,
         increaseQuantity,
         decreaseQuantity,
       }}

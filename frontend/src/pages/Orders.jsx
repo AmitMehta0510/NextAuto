@@ -60,7 +60,7 @@ const Orders = () => {
           {orders.map((o) => (
             <div
               key={o._id}
-              className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition"
+              className="bg-white rounded-2xl border border-gray-300 shadow-sm hover:shadow-md transition"
             >
               {/* Header */}
               <div className="flex justify-between items-center px-6 py-4 border-b border-gray-100">
@@ -137,11 +137,6 @@ const Orders = () => {
           ))}
         </div>
       </main>
-
-      {/* Sticky Footer */}
-      <footer className="bg-white border-t border-gray-200 text-center py-4 text-sm text-gray-500">
-        © {new Date().getFullYear()} NextAuto. All rights reserved.
-      </footer>
     </div>
   );
 };

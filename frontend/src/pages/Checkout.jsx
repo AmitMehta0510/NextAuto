@@ -1,10 +1,18 @@
 import React, { useState } from "react";
 import { useCart } from "../context/CartContext";
+import toast from "react-hot-toast";
 import API from "../utils/api";
 import { useNavigate } from "react-router-dom";
+import { Trash2 } from "lucide-react";
 
 const Checkout = () => {
-  const { cart, clearCart, increaseQuantity, decreaseQuantity } = useCart();
+  const {
+    cart,
+    clearCart,
+    increaseQuantity,
+    decreaseQuantity,
+    removeFromCart,
+  } = useCart();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -110,7 +118,7 @@ const Checkout = () => {
                     >
                       –
                     </button>
-                    
+
                     <span className="font-medium text-gray-800 dark:text-white">
                       {item.quantity}
                     </span>
@@ -128,6 +136,17 @@ const Checkout = () => {
                 <p className="font-bold text-lg">
                   ₹{item.product.price * item.quantity}
                 </p>
+                <button
+                  onClick={() => {
+                    removeFromCart(item.product._id);
+                    toast.error(`${item.product?.name} removed from cart`, {
+                      icon: "❌",
+                    });
+                  }}
+                  className="flex items-center gap-1 text-red-500 text-sm mt-2 hover:underline"
+                >
+                  <Trash2 size={14} /> Remove
+                </button>
               </div>
             ))
           )}

@@ -6,15 +6,16 @@ import { useCart } from "../context/CartContext.jsx";
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
-  const { cart, clearCart } = useCart(); // get clearCart here
+const { cart, clearCartFrontend } = useCart();
 
   const cartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
 
   // Updated logout handler
 const handleLogout = () => {
-  clearCart(); // only clear frontend cart
-  logout();    // log out user
+  clearCartFrontend(); // ✅ clear only frontend
+  logout();
 };
+
 
 
   return (
