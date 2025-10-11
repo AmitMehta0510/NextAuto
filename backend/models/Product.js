@@ -6,7 +6,7 @@ const productSchema = new mongoose.Schema(
     description: { type: String },
     price: { type: Number, required: true, default: 0 },
     category: { type: String, default: "other" },
-    image: { type: String }, // URL to image (Cloudinary/S3/local)
+    images: [{ type: String, required: true }],
     stock: { type: Number, default: 0 },
     totalSold: { type: Number, default: 0 },
     tags: [{ type: String }],

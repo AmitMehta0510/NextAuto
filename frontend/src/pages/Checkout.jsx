@@ -17,8 +17,6 @@ const Checkout = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  console.log("Cart at Checkout:", cart);
-
   // Shipping form state (added name and phone)
   const [shipping, setShipping] = useState({
     name: "",

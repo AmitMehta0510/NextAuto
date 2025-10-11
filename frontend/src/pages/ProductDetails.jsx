@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import API from "../utils/api";
 import { useCart } from "../context/CartContext";
+import AuthContext from "../context/AuthContext.jsx";
+import toast from "react-hot-toast";
 
 import {
   FaStar,
@@ -9,21 +11,19 @@ import {
   FaRegStar,
   FaCheckCircle,
 } from "react-icons/fa";
-import toast from "react-hot-toast";
-import { useContext } from "react";
-import AuthContext from "../context/AuthContext.jsx";
 
 const ProductDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
-  const { addToCart } = useCart();
   const [activeTab, setActiveTab] = useState("description");
-
+  const { addToCart } = useCart();
   const { user } = useContext(AuthContext);
 
   useEffect(() => {
-    API.get(`/products/${id}`).then((res) => setProduct(res.data));
+    API.get(`/products/${id}`)
+      .then((res) => setProduct(res.data))
+      .catch(() => toast.error("Failed to load product details"));
   }, [id]);
 
   const renderStars = (rating) => {
@@ -60,6 +60,14 @@ const ProductDetails = () => {
     );
   }
 
+  // ✅ Handle both Cloudinary and local placeholder images
+  const mainImage =
+    product.images?.[0] || product.image || "https://via.placeholder.com/500";
+
+  const imageList = product.images?.length
+    ? product.images
+    : [product.image || "https://via.placeholder.com/100"];
+
   return (
     <div className="max-w-7xl mx-auto p-6">
       <div className="grid lg:grid-cols-2 gap-12">
@@ -67,19 +75,28 @@ const ProductDetails = () => {
         <div className="space-y-4">
           <div className="bg-white rounded-2xl shadow-lg p-6 flex justify-center">
             <img
-              src={product.image || "https://via.placeholder.com/500"}
+              src={mainImage}
               alt={product.name}
               className="w-full h-[400px] object-contain rounded-xl hover:scale-105 transition-transform"
+              onError={(e) => (e.target.src = "https://placehold.co/500x400")}
             />
           </div>
-          {/* thumbnails */}
-          <div className="flex space-x-4 justify-center">
-            {[1, 2, 3].map((i) => (
+
+          {/* ===== Thumbnails ===== */}
+          <div className="flex space-x-4 justify-center flex-wrap">
+            {imageList.map((img, i) => (
               <img
                 key={i}
-                src={product.image || "https://via.placeholder.com/100"}
+                src={img}
                 alt={`thumb-${i}`}
+                onClick={() =>
+                  setProduct((prev) => ({
+                    ...prev,
+                    images: [img, ...prev.images.filter((im) => im !== img)],
+                  }))
+                }
                 className="w-20 h-20 rounded-lg border hover:border-cyan-500 object-contain cursor-pointer"
+                onError={(e) => (e.target.src = "https://placehold.co/100x100")}
               />
             ))}
           </div>

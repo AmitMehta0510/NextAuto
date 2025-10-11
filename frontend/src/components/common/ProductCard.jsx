@@ -10,7 +10,16 @@ const ProductCard = ({ product, onAddToCart }) => {
 
   return (
     <div className="bg-[#001F2E] rounded-lg shadow-lg overflow-hidden p-4 flex flex-col">
-      <img src={product.image} alt={product.name} className="h-40 w-full object-cover rounded" />
+      <img
+        src={
+          product.images?.[0] ||
+          product.image ||
+          "https://via.placeholder.com/300"
+        }
+        alt={product.name}
+        className="h-40 w-full object-cover rounded"
+      />
+
       <h2 className="text-xl font-bold mt-4">{product.name}</h2>
       <p className="text-gray-400 text-sm mt-2">{product.description}</p>
       <p className="mt-3 font-semibold text-cyan-400">₹{product.price}</p>

@@ -4,6 +4,13 @@ import { Link } from "react-router-dom";
 import { ShoppingBag, Package, CreditCard, MapPin } from "lucide-react";
 
 const Orders = () => {
+  const getImageUrl = (image) => {
+    if (!image) return "https://via.placeholder.com/60";
+    return image.startsWith("http")
+      ? image
+      : `${import.meta.env.VITE_API_URL}/${image}`;
+  };
+
   const [orders, setOrders] = useState([]);
 
   useEffect(() => {
@@ -85,9 +92,7 @@ const Orders = () => {
                     className="flex items-center gap-4 px-6 py-4 hover:bg-gray-50"
                   >
                     <img
-                      src={
-                        item.product?.image || "https://via.placeholder.com/60"
-                      }
+                      src={getImageUrl(item.product?.image)}
                       alt={item.product?.name}
                       className="w-16 h-16 object-cover rounded-lg border"
                     />

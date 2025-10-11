@@ -1,26 +1,43 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useCart } from "../context/CartContext";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import AuthContext from "../context/AuthContext.jsx";
 import { ShoppingCart, Trash2 } from "lucide-react";
+import API from "../utils/api";
 
 const Cart = () => {
   const { cart, removeFromCart, increaseQuantity, decreaseQuantity } =
     useCart();
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [cartWithImages, setCartWithImages] = useState([]);
 
-  const validCart = cart.filter((item) => item.product);
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const updatedCart = await Promise.all(
+        cart.map(async (item) => {
+          if (!item.product.images) {
+            const res = await API.get(`/products/${item.product._id}`);
+            return { ...item, product: res.data };
+          }
+          return item;
+        })
+      );
+      setCartWithImages(updatedCart);
+    };
+    fetchProducts();
+  }, [cart]);
 
-  const totalPrice = validCart.reduce(
+  const totalPrice = cartWithImages.reduce(
     (acc, item) => acc + (item.product.price || 0) * item.quantity,
     0
   );
+  const totalItems = cartWithImages.reduce(
+    (acc, item) => acc + item.quantity,
+    0
+  );
 
-  const totalItems = validCart.reduce((acc, item) => acc + item.quantity, 0);
-
-  // ✅ Checkout handler
   const handleCheckout = () => {
     if (!user) {
       toast.error("Please login to proceed to checkout");
@@ -30,7 +47,7 @@ const Cart = () => {
     navigate("/checkout");
   };
 
-  if (!validCart.length) {
+  if (!cartWithImages.length) {
     return (
       <div className="flex justify-center items-center min-h-[calc(100vh-120px)] px-4">
         <div className="bg-white dark:bg-gray-800 shadow-xl rounded-2xl p-8 max-w-md w-full text-center border border-gray-200 dark:border-gray-700">
@@ -60,21 +77,20 @@ const Cart = () => {
       </h1>
 
       <div className="grid md:grid-cols-3 gap-8">
-        {/* Cart Items */}
         <div className="md:col-span-2 space-y-6">
-          {validCart.map((item, index) => (
+          {cartWithImages.map((item, index) => (
             <div
-              key={item._id || `${item.product?._id}-${index}`} // ✅ unique, safe fallback
+              key={item._id || `${item.product?._id}-${index}`}
               className="flex items-center bg-white dark:bg-[#012A3F] rounded-2xl shadow-md hover:shadow-lg transition p-5"
             >
-              {/* Image */}
               <img
-                src={item.product?.image || "https://via.placeholder.com/120"}
+                src={
+                  item.product.images?.[0] || "https://via.placeholder.com/120"
+                }
                 alt={item.product?.name}
                 className="w-28 h-28 object-cover rounded-lg border"
               />
 
-              {/* Details */}
               <div className="flex-1 ml-5">
                 <h2 className="text-lg font-semibold text-gray-800 dark:text-white">
                   {item.product?.name}
@@ -83,7 +99,6 @@ const Cart = () => {
                   ₹{item.product?.price ?? 0} each
                 </p>
 
-                {/* Quantity Controls */}
                 <div className="flex items-center space-x-3 mt-3">
                   <button
                     onClick={() => decreaseQuantity(item.product._id)}
@@ -103,7 +118,6 @@ const Cart = () => {
                 </div>
               </div>
 
-              {/* Subtotal & Remove */}
               <div className="text-right">
                 <p className="font-semibold text-lg text-gray-800 dark:text-white">
                   ₹{(item.product?.price || 0) * item.quantity}
@@ -124,12 +138,10 @@ const Cart = () => {
           ))}
         </div>
 
-        {/* Summary */}
         <div className="bg-white dark:bg-[#001F2E] rounded-2xl shadow-lg p-6 h-fit sticky top-20 border border-gray-200 dark:border-gray-700">
           <h2 className="text-xl font-bold mb-6 text-gray-800 dark:text-white">
             Order Summary
           </h2>
-
           <div className="flex justify-between mb-3 text-gray-700 dark:text-gray-300">
             <span>Total Items</span>
             <span>{totalItems}</span>
@@ -141,7 +153,6 @@ const Cart = () => {
             </span>
           </div>
 
-          {/* ✅ Button */}
           <button
             onClick={handleCheckout}
             className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white py-3 rounded-lg text-center font-semibold shadow-md hover:opacity-90 transition"

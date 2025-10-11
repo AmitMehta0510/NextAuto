@@ -1,4 +1,6 @@
 import express from "express";
+import cloudinary from "../utils/cloudinary.js";
+import multer from "multer";
 import {
   getAllUsers,
   deleteUser,
@@ -18,4 +20,23 @@ router.put("/users/:id/demote", protect, adminOnly, demoteUserToNormal);
 
 router.get("/stats", protect, adminOnly, getAdminStats);
 router.get("/reports/sales", protect, adminOnly, getSalesReport);
+
+const upload = multer({ dest: "uploads/" });
+
+router.post("/upload", upload.array("images"), async (req, res) => {
+  try {
+    const urls = [];
+    for (const file of req.files) {
+      const result = await cloudinary.uploader.upload(file.path, {
+        folder: "products",
+      });
+      urls.push(result.secure_url);
+    }
+    res.json({ urls });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Cloudinary upload failed" });
+  }
+});
+
 export default router;
