@@ -20,6 +20,7 @@ import adminProductRoutes from "./routes/adminProductRoutes.js";
 import adminOrderRoutes from "./routes/adminOrderRoutes.js";
 import adminUserRoutes from "./routes/adminUserRoutes.js";
 import adminContactRoutes from "./routes/adminContactRoutes.js";
+import otpRoutes from "./routes/otpRoutes.js";
 
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 
@@ -58,6 +59,7 @@ app.use("/api/admin/products", adminProductRoutes);
 app.use("/api/admin/orders", adminOrderRoutes);
 app.use("/api/admin/users", adminUserRoutes);
 app.use("/api/admin/contacts", adminContactRoutes);
+app.use("/api/otp", otpRoutes);
 // app.use("/api/admin/reports", )
 
 app.get("/", (_req, res) => res.json({ ok: true, message: "NextAuto API" }));

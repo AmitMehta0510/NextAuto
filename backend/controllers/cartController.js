@@ -15,7 +15,6 @@ export const getCart = async (req, res, next) => {
   }
 };
 
-
 export const addToCart = async (req, res, next) => {
   try {
     const { productId, quantity = 1 } = req.body;
@@ -27,23 +26,24 @@ export const addToCart = async (req, res, next) => {
     let cart = await Cart.findOne({ user: req.user._id });
     if (!cart) {
       cart = await Cart.create({ user: req.user._id, items: [{ product: productId, quantity }] });
-      return res.json(cart);
-    }
-
-    const idx = cart.items.findIndex(i => i.product.toString() === productId);
-    if (idx > -1) {
-      cart.items[idx].quantity += quantity;
     } else {
-      cart.items.push({ product: productId, quantity });
+      const idx = cart.items.findIndex(i => i.product.toString() === productId);
+      if (idx > -1) {
+        cart.items[idx].quantity += quantity;
+      } else {
+        cart.items.push({ product: productId, quantity });
+      }
+      await cart.save();
     }
 
-    await cart.save();
+    // ✅ Always populate before returning
     cart = await cart.populate("items.product");
     res.json(cart);
   } catch (err) {
     next(err);
   }
 };
+
 
 export const removeFromCart = async (req, res, next) => {
   try {

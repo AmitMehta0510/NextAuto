@@ -19,8 +19,10 @@ const Checkout = () => {
 
   console.log("Cart at Checkout:", cart);
 
-  // Shipping form state
+  // Shipping form state (added name and phone)
   const [shipping, setShipping] = useState({
+    name: "",
+    phone: "",
     address: "",
     city: "",
     postalCode: "",
@@ -44,6 +46,8 @@ const Checkout = () => {
     if (!cart.length) return setError("🛒 Your cart is empty.");
 
     if (
+      !shipping.name ||
+      !shipping.phone ||
       !shipping.address ||
       !shipping.city ||
       !shipping.postalCode ||
@@ -58,9 +62,9 @@ const Checkout = () => {
 
       const orderData = {
         orderItems: cart.map((item) => ({
-          product: item.product._id, // ✅ reference correct product ID
+          product: item.product._id,
           quantity: item.quantity,
-          priceAtPurchase: item.product.price, // ✅ use product.price
+          priceAtPurchase: item.product.price,
         })),
         totalPrice: cart.reduce(
           (sum, item) => sum + item.product.price * item.quantity,
@@ -71,8 +75,8 @@ const Checkout = () => {
       };
 
       await API.post("/orders", orderData);
-
       clearCart();
+      toast.success("✅ Order placed successfully!");
       navigate("/orders");
     } catch (err) {
       setError(err.response?.data?.message || "❌ Order failed. Try again.");
@@ -99,7 +103,7 @@ const Checkout = () => {
           ) : (
             cart.map((item) => (
               <div
-                key={item.product._id}
+                key={item._id || item.product?._id || index}
                 className="flex items-center bg-[#001F2E] rounded-xl p-4 shadow hover:shadow-lg transition"
               >
                 <img
@@ -118,7 +122,6 @@ const Checkout = () => {
                     >
                       –
                     </button>
-
                     <span className="font-medium text-gray-800 dark:text-white">
                       {item.quantity}
                     </span>
@@ -159,6 +162,22 @@ const Checkout = () => {
           </h2>
 
           <div className="space-y-3">
+            <input
+              type="text"
+              name="name"
+              value={shipping.name}
+              onChange={handleChange}
+              placeholder="Full Name"
+              className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+            />
+            <input
+              type="text"
+              name="phone"
+              value={shipping.phone}
+              onChange={handleChange}
+              placeholder="Phone Number"
+              className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+            />
             <input
               type="text"
               name="address"

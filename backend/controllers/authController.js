@@ -1,5 +1,6 @@
 import User from "../models/User.js";
 import jwt from "jsonwebtoken";
+import OTP from "../models/OTP.js";
 
 // Always include id, role, and isAdmin in the payload
 const signToken = (id, role, isAdmin) =>
@@ -11,23 +12,37 @@ const signToken = (id, role, isAdmin) =>
 export const register = async (req, res, next) => {
   try {
     const { name, email, phone, password } = req.body;
-    if (!name || !email || !password) {
+
+    if (!name || !password || (!email && !phone))
       return res.status(400).json({ message: "Missing fields" });
-    }
 
-    const exists = await User.findOne({ email });
-    if (exists) {
-      return res.status(400).json({ message: "Email already in use" });
-    }
+    // ✅ Build dynamic query to prevent empty fields from causing false matches
+    const query = [];
+    if (email && email.trim() !== "") query.push({ email });
+    if (phone && phone.trim() !== "") query.push({ phone });
 
-    const user = await User.create({ name, email, phone, password });
+    if (query.length === 0)
+      return res.status(400).json({ message: "Provide valid email or phone" });
+
+    const exists = await User.findOne({ $or: query });
+    if (exists)
+      return res.status(400).json({ message: "Email or phone already in use" });
+
+    const user = await User.create({
+      name,
+      email: email?.trim() || undefined,
+      phone: phone?.trim() || undefined,
+      password,
+    });
 
     const token = signToken(user._id, user.role, user.isAdmin);
+
     res.status(201).json({
       user: {
         id: user._id,
         name: user.name,
         email: user.email,
+        phone: user.phone || "",
         role: user.role,
         isAdmin: user.isAdmin,
       },
@@ -41,23 +56,36 @@ export const register = async (req, res, next) => {
 // LOGIN
 export const login = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
-    if (!email || !password) {
-      return res.status(400).json({ message: "Missing credentials" });
+    const { identifier, password, otp } = req.body;
+
+    if (!identifier)
+      return res.status(400).json({ message: "Missing identifier" });
+
+    const user = await User.findOne({
+      $or: [{ email: identifier }, { phone: identifier }],
+    }).select("+password");
+
+    if (!user) return res.status(400).json({ message: "User not found" });
+
+    // ✅ Option 1: Password Login
+    if (password) {
+      const validPassword = await user.matchPassword(password);
+      if (!validPassword)
+        return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    const user = await User.findOne({ email }).select("+password");
-    if (!user) return res.status(400).json({ message: "Invalid credentials" });
-
-    const ok = await user.matchPassword(password);
-    if (!ok) return res.status(400).json({ message: "Invalid credentials" });
+    // ✅ Option 2: OTP Login (trust verified frontend)
+    if (!password && !otp)
+      return res.status(400).json({ message: "Provide password or OTP" });
 
     const token = signToken(user._id, user.role, user.isAdmin);
+
     res.json({
       user: {
         id: user._id,
         name: user.name,
         email: user.email,
+        phone: user.phone || "",
         role: user.role,
         isAdmin: user.isAdmin,
       },
@@ -75,7 +103,15 @@ export const getProfile = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    res.json(user);
+    res.json({
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone || "",
+      role: user.role,
+      isAdmin: user.isAdmin,
+      isActive: user.isActive,
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: "Server error" });
   }

@@ -80,7 +80,7 @@ const Cart = () => {
                   {item.product?.name}
                 </h2>
                 <p className="text-gray-500 dark:text-gray-300 text-sm">
-                  ₹{item.product?.price} each
+                  ₹{item.product?.price ?? 0} each
                 </p>
 
                 {/* Quantity Controls */}
