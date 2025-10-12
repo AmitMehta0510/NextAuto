@@ -66,20 +66,20 @@ const Login = () => {
   };
 
   return (
-    <section className="flex items-center justify-center min-h-screen bg-[#020b12] text-white px-4">
-      <div className="bg-[#041421]/90 backdrop-blur-xl shadow-lg rounded-2xl w-full max-w-md p-8 border border-gray-700">
-        <h2 className="text-3xl font-bold text-center mb-4">
+    <section className="flex items-center justify-center min-h-screen bg-[#020b12] text-white px-2 sm:px-4">
+      <div className="bg-[#041421]/90 backdrop-blur-xl shadow-lg rounded-2xl w-full max-w-xs sm:max-w-md p-4 sm:p-8 border border-gray-700">
+        <h2 className="text-2xl sm:text-3xl font-bold text-center mb-3 sm:mb-4">
           Welcome Back to <span className="text-cyan-400">NextAuto</span>
         </h2>
-        <p className="text-gray-400 text-sm text-center mb-6">
+        <p className="text-gray-400 text-xs sm:text-sm text-center mb-4 sm:mb-6">
           Login to continue your journey
         </p>
 
         {/* Toggle Buttons */}
-        <div className="flex justify-center gap-3 mb-6">
+        <div className="flex flex-col sm:flex-row justify-center gap-2 sm:gap-3 mb-4 sm:mb-6">
           <button
             onClick={() => setMethod("password")}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition ${
+            className={`px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition ${
               method === "password"
                 ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-white"
                 : "bg-gray-700 text-gray-300 hover:bg-gray-600"
@@ -89,7 +89,7 @@ const Login = () => {
           </button>
           <button
             onClick={() => setMethod("otp")}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition ${
+            className={`px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition ${
               method === "otp"
                 ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-white"
                 : "bg-gray-700 text-gray-300 hover:bg-gray-600"
@@ -100,11 +100,11 @@ const Login = () => {
         </div>
 
         {/* Form */}
-        <div className="space-y-4">
+        <div className="space-y-2 sm:space-y-4">
           <input
             type="text"
             placeholder="Email or Phone"
-            className="w-full bg-transparent border border-gray-600 rounded-lg px-4 py-3 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 outline-none"
+            className="w-full bg-transparent border border-gray-600 rounded-lg px-3 sm:px-4 py-2 sm:py-3 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 outline-none text-xs sm:text-sm"
             onChange={(e) => setIdentifier(e.target.value)}
           />
 
@@ -112,7 +112,7 @@ const Login = () => {
             <input
               type="password"
               placeholder="Password"
-              className="w-full bg-transparent border border-gray-600 rounded-lg px-4 py-3 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 outline-none"
+              className="w-full bg-transparent border border-gray-600 rounded-lg px-3 sm:px-4 py-2 sm:py-3 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 outline-none text-xs sm:text-sm"
               onChange={(e) => setPassword(e.target.value)}
             />
           )}
@@ -122,17 +122,17 @@ const Login = () => {
               {!otpSent && (
                 <button
                   onClick={handleSendOtp}
-                  className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold px-6 py-3 rounded-full shadow-lg hover:opacity-90 transition"
+                  className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold px-3 sm:px-6 py-2 sm:py-3 rounded-full shadow-lg hover:opacity-90 transition text-xs sm:text-base"
                 >
                   Send OTP
                 </button>
               )}
               {otpSent && !verified && (
-                <div className="mt-4 text-center">
+                <div className="mt-3 sm:mt-4 text-center">
                   <OtpInput onChange={setOtp} />
                   <button
                     onClick={handleVerifyOtp}
-                    className="mt-4 w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-full font-semibold transition"
+                    className="mt-3 sm:mt-4 w-full bg-green-600 hover:bg-green-700 text-white py-2 sm:py-3 rounded-full font-semibold transition text-xs sm:text-base"
                   >
                     Verify OTP
                   </button>
@@ -144,14 +144,14 @@ const Login = () => {
           {(method === "password" || verified) && (
             <button
               onClick={handleLogin}
-              className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold px-6 py-3 rounded-full shadow-lg hover:opacity-90 transition mt-4"
+              className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold px-3 sm:px-6 py-2 sm:py-3 rounded-full shadow-lg hover:opacity-90 transition mt-3 sm:mt-4 text-xs sm:text-base"
             >
               Login
             </button>
           )}
         </div>
 
-        <p className="text-sm text-gray-400 mt-6 text-center">
+        <p className="text-xs sm:text-sm text-gray-400 mt-5 sm:mt-6 text-center">
           Don’t have an account?{" "}
           <Link to="/register" className="text-cyan-400 hover:underline">
             Register Now!

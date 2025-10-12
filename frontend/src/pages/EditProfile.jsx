@@ -29,9 +29,8 @@ const EditProfile = () => {
     }
   }, [user]);
 
-  const handleChange = (e) => {
+  const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -46,54 +45,54 @@ const EditProfile = () => {
   };
 
   return (
-    <div className="max-w-lg mx-auto mt-10 relative bg-[#001F2E] text-white rounded-2xl shadow-xl p-8 animate-fadein">
-      {/* 🔹 Close button */}
+    <div className="max-w-lg mx-auto mt-6 sm:mt-10 relative bg-[#001F2E] text-white rounded-2xl shadow-xl p-4 sm:p-8 animate-fadein">
+      {/* Close button */}
       <button
         onClick={() => navigate("/profile")}
-        className="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition"
+        className="absolute top-3 sm:top-4 right-3 sm:right-4 text-gray-400 hover:text-red-500 transition"
         aria-label="Close Edit Profile"
       >
-        <FiX size={24} />
+        <FiX size={22} />
       </button>
 
-      <h1 className="text-2xl font-bold mb-6 text-center">Edit Profile</h1>
+      <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-center">Edit Profile</h1>
 
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
         <div>
-          <label className="block text-sm font-medium">Name</label>
+          <label className="block text-xs sm:text-sm font-medium">Name</label>
           <input
             type="text"
             name="name"
             value={formData.name}
             onChange={handleChange}
-            className="w-full mt-1 px-4 py-2 rounded-lg bg-gray-800 text-white focus:ring-2 focus:ring-cyan-500"
+            className="w-full mt-1 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg bg-gray-800 text-white text-xs sm:text-sm focus:ring-2 focus:ring-cyan-500"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium">Email</label>
+          <label className="block text-xs sm:text-sm font-medium">Email</label>
           <input
             type="email"
             name="email"
             value={formData.email}
             onChange={handleChange}
-            className="w-full mt-1 px-4 py-2 rounded-lg bg-gray-800 text-white focus:ring-2 focus:ring-cyan-500"
+            className="w-full mt-1 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg bg-gray-800 text-white text-xs sm:text-sm focus:ring-2 focus:ring-cyan-500"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium">Phone</label>
+          <label className="block text-xs sm:text-sm font-medium">Phone</label>
           <input
             type="text"
             name="phone"
             value={formData.phone}
             onChange={handleChange}
-            className="w-full mt-1 px-4 py-2 rounded-lg bg-gray-800 text-white focus:ring-2 focus:ring-cyan-500"
+            className="w-full mt-1 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg bg-gray-800 text-white text-xs sm:text-sm focus:ring-2 focus:ring-cyan-500"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium">
+          <label className="block text-xs sm:text-sm font-medium">
             Password (optional)
           </label>
           <input
@@ -102,13 +101,13 @@ const EditProfile = () => {
             placeholder="Enter new password"
             value={formData.password}
             onChange={handleChange}
-            className="w-full mt-1 px-4 py-2 rounded-lg bg-gray-800 text-white focus:ring-2 focus:ring-cyan-500"
+            className="w-full mt-1 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg bg-gray-800 text-white text-xs sm:text-sm focus:ring-2 focus:ring-cyan-500"
           />
         </div>
 
         <button
           type="submit"
-          className="w-full bg-cyan-500 hover:bg-cyan-600 py-2 rounded-lg font-semibold transition"
+          className="w-full bg-cyan-500 hover:bg-cyan-600 py-2 sm:py-3 rounded-lg font-semibold transition text-xs sm:text-base"
         >
           Save Changes
         </button>

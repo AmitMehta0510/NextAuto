@@ -46,7 +46,7 @@ const Register = () => {
     try {
       if (!verified) return toast.error("Please verify OTP first");
       const { data } = await API.post("/auth/register", form);
-      localStorage.setItem("userInfo", JSON.stringify(data)); // ✅ store full data
+      localStorage.setItem("userInfo", JSON.stringify(data));
       setUser(data.user);
       toast.success("Registered successfully 🎉");
       navigate("/");
@@ -56,56 +56,55 @@ const Register = () => {
   };
 
   return (
-    <section className="flex items-center justify-center min-h-screen bg-[#020b12] text-white px-4">
-      <div className="bg-[#041421]/90 backdrop-blur-xl shadow-lg rounded-2xl w-full max-w-md p-8 border border-gray-700">
-        <h2 className="text-3xl font-bold text-center mb-4">
+    <section className="flex items-center justify-center min-h-screen bg-[#020b12] text-white px-2 sm:px-4">
+      <div className="bg-[#041421]/90 backdrop-blur-xl shadow-lg rounded-2xl w-full max-w-xs sm:max-w-md p-4 sm:p-8 border border-gray-700">
+        <h2 className="text-2xl sm:text-3xl font-bold text-center mb-3 sm:mb-4">
           Create Your <span className="text-cyan-400">NextAuto</span> Account
         </h2>
-        <p className="text-gray-400 text-sm text-center mb-6">
+        <p className="text-gray-400 text-xs sm:text-sm text-center mb-4 sm:mb-6">
           Join us and explore your next journey 🚀
         </p>
-
-        <div className="space-y-4">
+        <div className="space-y-2 sm:space-y-4">
           <input
             type="text"
             placeholder="Full Name"
-            className="w-full bg-transparent border border-gray-600 rounded-lg px-4 py-3 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 outline-none"
+            className="w-full bg-transparent border border-gray-600 rounded-lg px-3 sm:px-4 py-2 sm:py-3 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 outline-none text-xs sm:text-sm"
             onChange={(e) => setForm({ ...form, name: e.target.value })}
           />
           <input
             type="email"
             placeholder="Email"
-            className="w-full bg-transparent border border-gray-600 rounded-lg px-4 py-3 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 outline-none"
+            className="w-full bg-transparent border border-gray-600 rounded-lg px-3 sm:px-4 py-2 sm:py-3 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 outline-none text-xs sm:text-sm"
             onChange={(e) => setForm({ ...form, email: e.target.value })}
           />
           <input
             type="text"
             placeholder="Phone (optional)"
-            className="w-full bg-transparent border border-gray-600 rounded-lg px-4 py-3 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 outline-none"
+            className="w-full bg-transparent border border-gray-600 rounded-lg px-3 sm:px-4 py-2 sm:py-3 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 outline-none text-xs sm:text-sm"
             onChange={(e) => setForm({ ...form, phone: e.target.value })}
           />
           <input
             type="password"
             placeholder="Password"
-            className="w-full bg-transparent border border-gray-600 rounded-lg px-4 py-3 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 outline-none"
+            className="w-full bg-transparent border border-gray-600 rounded-lg px-3 sm:px-4 py-2 sm:py-3 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 outline-none text-xs sm:text-sm"
             onChange={(e) => setForm({ ...form, password: e.target.value })}
           />
 
           {!otpSent && (
             <button
               onClick={handleSendOtp}
-              className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold px-6 py-3 rounded-full shadow-lg hover:opacity-90 transition"
+              className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold px-3 sm:px-6 py-2 sm:py-3 rounded-full shadow-lg hover:opacity-90 transition text-xs sm:text-base"
             >
               Send OTP
             </button>
           )}
 
           {otpSent && !verified && (
-            <div className="mt-4 text-center">
+            <div className="mt-3 sm:mt-4 text-center">
               <OtpInput onChange={setOtp} />
               <button
                 onClick={handleVerifyOtp}
-                className="mt-4 w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-full font-semibold transition"
+                className="mt-3 sm:mt-4 w-full bg-green-600 hover:bg-green-700 text-white py-2 sm:py-3 rounded-full font-semibold transition text-xs sm:text-base"
               >
                 Verify OTP
               </button>
@@ -115,14 +114,14 @@ const Register = () => {
           {verified && (
             <button
               onClick={handleRegister}
-              className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold px-6 py-3 rounded-full shadow-lg hover:opacity-90 transition mt-4"
+              className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold px-3 sm:px-6 py-2 sm:py-3 rounded-full shadow-lg hover:opacity-90 transition mt-3 sm:mt-4 text-xs sm:text-base"
             >
               Register
             </button>
           )}
         </div>
 
-        <p className="text-sm text-gray-400 mt-6 text-center">
+        <p className="text-xs sm:text-sm text-gray-400 mt-5 sm:mt-6 text-center">
           Already have an account?{" "}
           <Link to="/login" className="text-cyan-400 hover:underline">
             Login here
@@ -132,5 +131,4 @@ const Register = () => {
     </section>
   );
 };
-
 export default Register;

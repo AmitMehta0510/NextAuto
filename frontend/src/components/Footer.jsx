@@ -17,21 +17,20 @@ const Footer = () => {
   const handleHomeClick = (e) => {
     e.preventDefault();
     if (location.pathname === "/") {
-      // Already on home, just scroll to top
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
-      // Navigate to home, then scroll to top
       navigate("/");
       setTimeout(() => {
         window.scrollTo({ top: 0, behavior: "smooth" });
       }, 100);
     }
   };
+
   return (
     <footer className="bg-[#07111f] text-gray-300 py-8">
-      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between px-6">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center md:items-start justify-between px-4 md:px-6">
         {/* Left Navigation */}
-        <ul className="flex flex-wrap justify-center lg:justify-start gap-6 mb-6 lg:mb-0 text-sm font-medium">
+        <ul className="flex flex-wrap justify-center md:justify-start gap-4 md:gap-6 mb-6 md:mb-0 text-sm font-medium w-full md:w-auto order-2 md:order-1">
           <li>
             <a
               href="/"
@@ -79,20 +78,20 @@ const Footer = () => {
         </ul>
 
         {/* Logo + Brand */}
-        <div className="flex items-center space-x-2 mb-6 lg:mb-0">
-          <img src={NextAuto} alt="" className="h-16" />
+        <div className="flex items-center mb-6 md:mb-0 order-1 md:order-2 w-full md:w-auto justify-center md:justify-start">
+          <img src={NextAuto} alt="NextAuto" className="h-12 w-12 object-contain mr-3" />
           <div className="text-[#2edaf1] font-semibold text-2xl tracking-wider">
             NextAuto
           </div>
         </div>
 
         {/* Right Navigation (Socials) */}
-        <div className="flex gap-4">
+        <div className="flex gap-3 md:gap-4 order-3 md:order-3 w-full md:w-auto justify-center md:justify-end">
           <a
             href="https://facebook.com"
             target="_blank"
             rel="noreferrer"
-            className="w-10 h-10 flex items-center justify-center border border-blue-400 rounded-full hover:bg-blue-500 hover:text-white transition"
+            className="w-9 h-9 flex items-center justify-center border border-blue-400 rounded-full hover:bg-blue-500 hover:text-white transition"
           >
             <FaFacebookF size={18} />
           </a>
@@ -100,7 +99,7 @@ const Footer = () => {
             href="https://twitter.com"
             target="_blank"
             rel="noreferrer"
-            className="w-10 h-10 flex items-center justify-center border border-blue-400 rounded-full hover:bg-blue-500 hover:text-white transition"
+            className="w-9 h-9 flex items-center justify-center border border-blue-400 rounded-full hover:bg-blue-500 hover:text-white transition"
           >
             <FaTwitter size={18} />
           </a>
@@ -108,7 +107,7 @@ const Footer = () => {
             href="https://linkedin.com"
             target="_blank"
             rel="noreferrer"
-            className="w-10 h-10 flex items-center justify-center border border-blue-400 rounded-full hover:bg-blue-500 hover:text-white transition"
+            className="w-9 h-9 flex items-center justify-center border border-blue-400 rounded-full hover:bg-blue-500 hover:text-white transition"
           >
             <FaLinkedinIn size={18} />
           </a>
@@ -116,7 +115,7 @@ const Footer = () => {
             href="https://wa.me/"
             target="_blank"
             rel="noreferrer"
-            className="w-10 h-10 flex items-center justify-center border border-blue-400 rounded-full hover:bg-blue-500 hover:text-white transition"
+            className="w-9 h-9 flex items-center justify-center border border-blue-400 rounded-full hover:bg-blue-500 hover:text-white transition"
           >
             <FaWhatsapp size={18} />
           </a>
@@ -133,5 +132,4 @@ const Footer = () => {
     </footer>
   );
 };
-
 export default Footer;
