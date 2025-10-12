@@ -31,9 +31,17 @@ connectDB();
 // middlewares
 app.use(helmet());
 app.use(express.json());
+
+const allowedOrigins = process.env.CLIENT_ORIGIN?.split(",") || [];
 app.use(
   cors({
-    origin: process.env.CLIENT_ORIGIN?.split(",") || "*",
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true); // allow Postman or curl
+      if (allowedOrigins.indexOf(origin) === -1) {
+        return callback(new Error("Not allowed by CORS"), false);
+      }
+      return callback(null, true);
+    },
     credentials: true,
   })
 );
