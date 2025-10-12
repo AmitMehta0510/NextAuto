@@ -1,6 +1,6 @@
 import OTP from "../models/OTP.js";
 import User from "../models/User.js";
-import {sendEmail} from "../utils/sendEmail.js";
+import { sendEmail } from "../utils/sendEmail.js";
 import crypto from "crypto";
 import twilio from "twilio";
 
@@ -23,19 +23,18 @@ export const sendOtp = async (req, res) => {
     await OTP.deleteMany({ identifier });
 
     const otp = generateOTP();
-    const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
-
+    const expiresAt = new Date(Date.now() + 30 * 60 * 1000);
 
     await OTP.create({ identifier, otp, expiresAt });
 
     // If email
     if (identifier.includes("@")) {
-      const subject = "🔐 Your NextAuto OTP Code";
+      const subject = "🔐 Your NextAuto verification code is : ";
       const html = `
-        <h2>Your OTP Code</h2>
+        <h2>Your OTP </h2>
         <p>Use this code to verify your account:</p>
         <h3>${otp}</h3>
-        <p>This code expires in 10 minutes.</p>
+        <p>This code expires in 30 minutes.</p>
       `;
       await sendEmail(identifier, subject, html);
     } else {
@@ -86,4 +85,3 @@ export const verifyOtp = async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
-
