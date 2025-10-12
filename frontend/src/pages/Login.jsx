@@ -85,7 +85,7 @@ const Login = () => {
                 : "bg-gray-700 text-gray-300 hover:bg-gray-600"
             }`}
           >
-            Password Login
+            Login with Password
           </button>
           <button
             onClick={() => setMethod("otp")}
@@ -95,7 +95,7 @@ const Login = () => {
                 : "bg-gray-700 text-gray-300 hover:bg-gray-600"
             }`}
           >
-            OTP Login
+            Login with OTP
           </button>
         </div>
 

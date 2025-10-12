@@ -6,6 +6,15 @@ import { useNavigate } from "react-router-dom";
 import { Trash2 } from "lucide-react";
 
 const Checkout = () => {
+  const getImageUrl = (product) => {
+    if (!product) return "https://via.placeholder.com/100";
+    const image =
+      product.images?.[0] || product.image || "https://via.placeholder.com/100";
+    return image.startsWith("http")
+      ? image
+      : `${import.meta.env.VITE_API_URL}/${image}`;
+  };
+
   const {
     cart,
     clearCart,
@@ -17,7 +26,6 @@ const Checkout = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Shipping form state (added name and phone)
   const [shipping, setShipping] = useState({
     name: "",
     phone: "",
@@ -27,18 +35,10 @@ const Checkout = () => {
     country: "",
   });
 
-  // Payment method
   const [paymentMethod, setPaymentMethod] = useState("COD");
-  const [upiId, setUpiId] = useState("");
-  const [cardDetails, setCardDetails] = useState({
-    number: "",
-    expiry: "",
-    cvv: "",
-  });
 
-  const handleChange = (e) => {
+  const handleChange = (e) =>
     setShipping({ ...shipping, [e.target.name]: e.target.value });
-  };
 
   const placeOrder = async () => {
     if (!cart.length) return setError("🛒 Your cart is empty.");
@@ -70,6 +70,7 @@ const Checkout = () => {
         ),
         shippingAddress: shipping,
         paymentMethod,
+        paymentStatus: paymentMethod === "COD" ? "Pending" : "Unavailable",
       };
 
       await API.post("/orders", orderData);
@@ -81,6 +82,14 @@ const Checkout = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handlePaymentSelect = (method) => {
+    if (method === "UPI" || method === "Card") {
+      toast.error("⚠️ Payment via UPI or Card is currently not available.");
+      return;
+    }
+    setPaymentMethod(method);
   };
 
   return (
@@ -99,15 +108,18 @@ const Checkout = () => {
           {cart.length === 0 ? (
             <p className="text-gray-400">Your cart is empty.</p>
           ) : (
-            cart.map((item) => (
+            cart.map((item, index) => (
               <div
                 key={item._id || item.product?._id || index}
                 className="flex items-center bg-[#001F2E] rounded-xl p-4 shadow hover:shadow-lg transition"
               >
                 <img
-                  src={item.product.image || "https://via.placeholder.com/100"}
+                  src={getImageUrl(item.product)}
                   alt={item.product.name}
                   className="w-20 h-20 object-cover rounded-md"
+                  onError={(e) =>
+                    (e.target.src = "https://via.placeholder.com/100")
+                  }
                 />
                 <div className="ml-4 flex-1">
                   <h2 className="text-gray-500 font-semibold text-lg">
@@ -155,59 +167,26 @@ const Checkout = () => {
 
         {/* Shipping + Summary */}
         <div className="bg-[#001F2E] rounded-xl p-6 shadow-lg h-fit space-y-6">
+          {/* Shipping Details */}
           <h2 className="text-xl font-bold border-b border-gray-700 pb-3">
             Shipping Details
           </h2>
-
           <div className="space-y-3">
-            <input
-              type="text"
-              name="name"
-              value={shipping.name}
-              onChange={handleChange}
-              placeholder="Full Name"
-              className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-400"
-            />
-            <input
-              type="text"
-              name="phone"
-              value={shipping.phone}
-              onChange={handleChange}
-              placeholder="Phone Number"
-              className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-400"
-            />
-            <input
-              type="text"
-              name="address"
-              value={shipping.address}
-              onChange={handleChange}
-              placeholder="Street Address"
-              className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-400"
-            />
-            <input
-              type="text"
-              name="city"
-              value={shipping.city}
-              onChange={handleChange}
-              placeholder="City"
-              className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-400"
-            />
-            <input
-              type="text"
-              name="postalCode"
-              value={shipping.postalCode}
-              onChange={handleChange}
-              placeholder="Postal Code"
-              className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-400"
-            />
-            <input
-              type="text"
-              name="country"
-              value={shipping.country}
-              onChange={handleChange}
-              placeholder="Country"
-              className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-400"
-            />
+            {["name", "phone", "address", "city", "postalCode", "country"].map(
+              (field) => (
+                <input
+                  key={field}
+                  type="text"
+                  name={field}
+                  value={shipping[field]}
+                  onChange={handleChange}
+                  placeholder={
+                    field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, " $1")
+                  }
+                  className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+                />
+              )
+            )}
           </div>
 
           {/* Payment Method */}
@@ -230,58 +209,13 @@ const Checkout = () => {
                     name="paymentMethod"
                     value={method}
                     checked={paymentMethod === method}
-                    onChange={(e) => setPaymentMethod(e.target.value)}
+                    onChange={() => handlePaymentSelect(method)}
                     className="accent-cyan-400"
                   />
                   <span>{method === "COD" ? "Cash on Delivery" : method}</span>
                 </label>
               ))}
             </div>
-
-            {/* Conditional Inputs */}
-            {paymentMethod === "UPI" && (
-              <input
-                type="text"
-                value={upiId}
-                onChange={(e) => setUpiId(e.target.value)}
-                placeholder="Enter your UPI ID (e.g., user@upi)"
-                className="mt-4 w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-400"
-              />
-            )}
-
-            {paymentMethod === "Card" && (
-              <div className="mt-4 space-y-3">
-                <input
-                  type="text"
-                  placeholder="Card Number"
-                  value={cardDetails.number}
-                  onChange={(e) =>
-                    setCardDetails({ ...cardDetails, number: e.target.value })
-                  }
-                  className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-400"
-                />
-                <div className="flex gap-3">
-                  <input
-                    type="text"
-                    placeholder="MM/YY"
-                    value={cardDetails.expiry}
-                    onChange={(e) =>
-                      setCardDetails({ ...cardDetails, expiry: e.target.value })
-                    }
-                    className="flex-1 p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-400"
-                  />
-                  <input
-                    type="password"
-                    placeholder="CVV"
-                    value={cardDetails.cvv}
-                    onChange={(e) =>
-                      setCardDetails({ ...cardDetails, cvv: e.target.value })
-                    }
-                    className="w-24 p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-400"
-                  />
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Order Summary */}

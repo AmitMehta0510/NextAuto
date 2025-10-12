@@ -42,7 +42,7 @@ export const createOrder = async (req, res) => {
 export const getMyOrders = async (req, res) => {
   try {
     const orders = await Order.find({ user: req.user._id })
-      .populate("orderItems.product", "name price");
+      .populate("orderItems.product", "name price image images"); // ✅ include image fields
     res.json(orders);
   } catch (error) {
     console.error(error);
@@ -57,7 +57,7 @@ export const getOrders = async (req, res) => {
   try {
     const orders = await Order.find({})
       .populate("user", "name email")
-      .populate("orderItems.product", "name price");
+      .populate("orderItems.product", "name price image images"); // ✅ include image fields
     res.json(orders);
   } catch (error) {
     console.error(error);
@@ -70,7 +70,7 @@ export const getOrderById = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id)
       .populate("user", "name email")
-      .populate("orderItems.product", "name price");
+      .populate("orderItems.product", "name price image images"); // ✅ include image fields
     if (!order) return res.status(404).json({ message: "Order not found" });
     res.json(order);
   } catch (error) {
@@ -86,7 +86,7 @@ export const updateOrder = async (req, res) => {
       new: true,
     })
       .populate("user", "name email")
-      .populate("orderItems.product", "name price");
+      .populate("orderItems.product", "name price image images"); // ✅ include image fields
     if (!order) return res.status(404).json({ message: "Order not found" });
     res.json(order);
   } catch (error) {
@@ -94,6 +94,7 @@ export const updateOrder = async (req, res) => {
     res.status(500).json({ message: "Failed to update order" });
   }
 };
+
 
 // DELETE /api/admin/orders/:id
 export const deleteOrder = async (req, res) => {
