@@ -1,6 +1,5 @@
 import User from "../models/User.js";
 import jwt from "jsonwebtoken";
-import OTP from "../models/OTP.js";
 
 // Always include id, role, and isAdmin in the payload
 const signToken = (id, role, isAdmin) =>
@@ -56,7 +55,7 @@ export const register = async (req, res, next) => {
 // LOGIN
 export const login = async (req, res, next) => {
   try {
-    const { identifier, password, otp } = req.body;
+    const { identifier, password } = req.body;
 
     if (!identifier)
       return res.status(400).json({ message: "Missing identifier" });
@@ -67,16 +66,13 @@ export const login = async (req, res, next) => {
 
     if (!user) return res.status(400).json({ message: "User not found" });
 
-    // ✅ Option 1: Password Login
-    if (password) {
-      const validPassword = await user.matchPassword(password);
-      if (!validPassword)
-        return res.status(400).json({ message: "Invalid credentials" });
-    }
+    // ✅ Password Login
+    if (!password)
+      return res.status(400).json({ message: "Password is required" });
 
-    // ✅ Option 2: OTP Login (trust verified frontend)
-    if (!password && !otp)
-      return res.status(400).json({ message: "Provide password or OTP" });
+    const validPassword = await user.matchPassword(password);
+    if (!validPassword)
+      return res.status(400).json({ message: "Invalid credentials" });
 
     const token = signToken(user._id, user.role, user.isAdmin);
 

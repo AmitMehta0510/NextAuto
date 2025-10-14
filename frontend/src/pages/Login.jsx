@@ -1,8 +1,6 @@
 import React, { useState, useContext } from "react";
 import toast from "react-hot-toast";
-import { sendOtp, verifyOtp } from "../utils/otpApi";
 import API from "../utils/api";
-import OtpInput from "../components/common/OtpInput";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import AuthContext from "../context/AuthContext.jsx";
 import { useCart } from "../context/CartContext.jsx";
@@ -10,48 +8,18 @@ import { useCart } from "../context/CartContext.jsx";
 const Login = () => {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
-  const [otp, setOtp] = useState("");
-  const [otpSent, setOtpSent] = useState(false);
-  const [verified, setVerified] = useState(false);
-  const [method, setMethod] = useState("password");
   const { setUser } = useContext(AuthContext);
   const { fetchCart } = useCart();
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from || "/";
 
-  const handleSendOtp = async () => {
-    try {
-      if (!identifier) return toast.error("Enter email or phone first");
-      const res = await sendOtp(identifier);
-      toast.success(res.message);
-      setOtpSent(true);
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to send OTP");
-    }
-  };
-
-  const handleVerifyOtp = async () => {
-    try {
-      const res = await verifyOtp(identifier, otp);
-      toast.success(res.message);
-      setVerified(true);
-    } catch (err) {
-      toast.error(err.response?.data?.message || "OTP verification failed");
-    }
-  };
-
   const handleLogin = async () => {
     try {
-      let res;
-      if (method === "password") {
-        if (!identifier || !password) return toast.error("Enter credentials");
-        res = await API.post("/auth/login", { identifier, password });
-      } else {
-        if (!verified) return toast.error("Verify OTP first");
-        res = await API.post("/auth/login", { identifier, otp });
-      }
+      if (!identifier || !password)
+        return toast.error("Enter email and password");
 
+      const res = await API.post("/auth/login", { identifier, password });
       const { user, token } = res.data;
       const userWithToken = { ...user, token };
       localStorage.setItem("userInfo", JSON.stringify(userWithToken));
@@ -75,83 +43,29 @@ const Login = () => {
           Login to continue your journey
         </p>
 
-        {/* Toggle Buttons */}
-        <div className="flex flex-col sm:flex-row justify-center gap-2 sm:gap-3 mb-4 sm:mb-6">
-          <button
-            onClick={() => setMethod("password")}
-            className={`px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition ${
-              method === "password"
-                ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-white"
-                : "bg-gray-700 text-gray-300 hover:bg-gray-600"
-            }`}
-          >
-            Login with Password
-          </button>
-          <button
-            onClick={() => setMethod("otp")}
-            className={`px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition ${
-              method === "otp"
-                ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-white"
-                : "bg-gray-700 text-gray-300 hover:bg-gray-600"
-            }`}
-          >
-            Login with OTP
-          </button>
-        </div>
-
-        {/* Form */}
-        <div className="space-y-2 sm:space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           <input
             type="text"
-            placeholder="Email or Phone"
-            className="w-full bg-transparent border border-gray-600 rounded-lg px-3 sm:px-4 py-2 sm:py-3 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 outline-none text-xs sm:text-sm"
+            placeholder="Email"
+            className="w-full bg-transparent border border-gray-600 rounded-lg px-4 py-3 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 outline-none text-sm"
             onChange={(e) => setIdentifier(e.target.value)}
           />
+          <input
+            type="password"
+            placeholder="Password"
+            className="w-full bg-transparent border border-gray-600 rounded-lg px-4 py-3 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 outline-none text-sm"
+            onChange={(e) => setPassword(e.target.value)}
+          />
 
-          {method === "password" && (
-            <input
-              type="password"
-              placeholder="Password"
-              className="w-full bg-transparent border border-gray-600 rounded-lg px-3 sm:px-4 py-2 sm:py-3 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 outline-none text-xs sm:text-sm"
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          )}
-
-          {method === "otp" && (
-            <>
-              {!otpSent && (
-                <button
-                  onClick={handleSendOtp}
-                  className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold px-3 sm:px-6 py-2 sm:py-3 rounded-full shadow-lg hover:opacity-90 transition text-xs sm:text-base"
-                >
-                  Send OTP
-                </button>
-              )}
-              {otpSent && !verified && (
-                <div className="mt-3 sm:mt-4 text-center">
-                  <OtpInput onChange={setOtp} />
-                  <button
-                    onClick={handleVerifyOtp}
-                    className="mt-3 sm:mt-4 w-full bg-green-600 hover:bg-green-700 text-white py-2 sm:py-3 rounded-full font-semibold transition text-xs sm:text-base"
-                  >
-                    Verify OTP
-                  </button>
-                </div>
-              )}
-            </>
-          )}
-
-          {(method === "password" || verified) && (
-            <button
-              onClick={handleLogin}
-              className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold px-3 sm:px-6 py-2 sm:py-3 rounded-full shadow-lg hover:opacity-90 transition mt-3 sm:mt-4 text-xs sm:text-base"
-            >
-              Login
-            </button>
-          )}
+          <button
+            onClick={handleLogin}
+            className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold px-6 py-3 rounded-full shadow-lg hover:opacity-90 transition text-sm"
+          >
+            Login
+          </button>
         </div>
 
-        <p className="text-xs sm:text-sm text-gray-400 mt-5 sm:mt-6 text-center">
+        <p className="text-sm text-gray-400 mt-6 text-center">
           Don’t have an account?{" "}
           <Link to="/register" className="text-cyan-400 hover:underline">
             Register Now!
@@ -161,4 +75,5 @@ const Login = () => {
     </section>
   );
 };
+
 export default Login;

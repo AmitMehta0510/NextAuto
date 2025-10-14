@@ -29,7 +29,7 @@ const Profile = () => {
   if (!profile) {
     return (
       <div className="flex justify-center items-center h-64">
-        <p className="text-gray-400 text-lg">Log in to see your profile</p>
+        <p className="text-gray-400 text-lg">Loading your profile...</p>
       </div>
     );
   }
